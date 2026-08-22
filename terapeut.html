@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<title>Terapeut — Tryggman</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:#FAFAF7;color:#1C2B35;line-height:1.6;overflow-x:hidden}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.1rem 6%;background:rgba(28,43,53,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05)}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:#fff;letter-spacing:0.02em;text-decoration:none}
+
+.hamburger{background:none;border:none;cursor:pointer;padding:0.3rem;display:flex;flex-direction:column;gap:5px;z-index:102}
+.hamburger span{display:block;width:24px;height:2px;background:#fff;transition:all 0.3s ease;border-radius:2px}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;transform:translateX(-8px)}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-menu{position:fixed;top:0;right:-100%;width:280px;height:100vh;background:#1C2B35;z-index:101;transition:right 0.35s ease;display:flex;flex-direction:column;padding:5rem 2rem 2rem;box-shadow:-8px 0 32px rgba(0,0,0,0.3)}
+.nav-menu.open{right:0}
+.nav-menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;display:none;backdrop-filter:blur(2px)}
+.nav-menu-overlay.open{display:block}
+.nav-menu ul{list-style:none;display:flex;flex-direction:column;gap:0.2rem;flex:1}
+.nav-menu ul li a{display:block;padding:0.75rem 0.8rem;color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.95rem;font-weight:400;border-radius:2px;transition:all 0.2s}
+.nav-menu ul li a:hover,.nav-menu ul li a.active{color:#fff;background:rgba(255,255,255,0.05)}
+.nav-menu ul li a.active{color:#4E9E8D}
+.nav-menu-cta{background:#3A7D6E!important;color:#fff!important;font-weight:500!important;margin-top:0.5rem}
+.nav-menu-cta:hover{background:#4E9E8D!important}
+.nav-menu-bottom{border-top:1px solid rgba(255,255,255,0.06);padding-top:1.2rem;margin-top:auto}
+.nav-menu-bottom a{display:block;padding:0.5rem 0.8rem;color:rgba(255,255,255,0.3);text-decoration:none;font-size:0.82rem;transition:color 0.2s}
+.nav-menu-bottom a:hover{color:rgba(255,255,255,0.6)}
+.nav-menu-label{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:0 0.8rem;margin-bottom:0.3rem;margin-top:1rem}
+
+/* DISCLAIMER POPUP */
+.disclaimer-popup{position:fixed;inset:0;background:rgba(28,43,53,0.7);z-index:300;display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
+.disclaimer-popup.hidden{display:none}
+.disclaimer-box{background:#fff;padding:2.5rem;max-width:480px;width:100%;border-radius:2px;border-top:4px solid #C0873A;box-shadow:0 16px 48px rgba(28,43,53,0.2)}
+.disclaimer-box h2{font-family:'DM Serif Display',serif;font-size:1.6rem;color:#1C2B35;margin-bottom:0.8rem}
+.disclaimer-box p{font-size:0.88rem;color:#6B7A85;line-height:1.75;margin-bottom:1rem}
+.disclaimer-box ul{list-style:none;margin-bottom:1.5rem;display:flex;flex-direction:column;gap:0.5rem}
+.disclaimer-box ul li{font-size:0.85rem;color:#1C2B35;display:flex;align-items:flex-start;gap:0.6rem}
+.disclaimer-box ul li::before{content:'•';color:#C0873A;font-weight:700;flex-shrink:0}
+.disclaimer-accept{width:100%;background:#3A7D6E;color:#fff;border:none;padding:0.9rem;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;transition:background 0.2s}
+.disclaimer-accept:hover{background:#4E9E8D}
+.disclaimer-crisis{font-size:0.72rem;color:#6B7A85;text-align:center;margin-top:0.8rem}
+.disclaimer-crisis a{color:#3A7D6E;text-decoration:none}
+
+.page-hero{padding:7rem 8% 5rem;background:#1C2B35;margin-top:62px;min-height:60vh;display:flex;flex-direction:column;justify-content:center}
+.section-label{font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:#4E9E8D;margin-bottom:0.9rem}
+.page-hero h1{font-family:'DM Serif Display',serif;font-size:3.5rem;line-height:1.1;color:#fff;margin-bottom:1rem}
+.page-hero h1 em{font-style:italic;color:#4E9E8D}
+.page-hero p{font-size:1rem;color:rgba(255,255,255,0.5);max-width:520px;font-weight:300;line-height:1.85;margin-bottom:2.5rem}
+.btn-primary{background:#3A7D6E;color:#fff;padding:0.9rem 2.2rem;border:none;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:500;cursor:pointer;transition:background 0.2s;display:inline-block;letter-spacing:0.02em}
+.btn-primary:hover{background:#4E9E8D}
+
+.info-section{padding:5rem 8%;background:#F2EDE5}
+.info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;max-width:1100px;margin:0 auto}
+.info-card{background:#fff;padding:1.8rem;border-top:3px solid #1C2B35}
+.info-icon{font-size:1.5rem;margin-bottom:0.8rem}
+.info-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:#1C2B35;margin-bottom:0.5rem}
+.info-text{font-size:0.82rem;color:#6B7A85;line-height:1.7;font-weight:300}
+.section-title{font-family:'DM Serif Display',serif;font-size:2.4rem;color:#1C2B35;margin-bottom:0.5rem}
+.section-body{font-size:0.95rem;color:#6B7A85;margin-bottom:2.5rem;font-weight:300}
+.disclaimer{background:rgba(192,135,58,0.1);border-left:3px solid #C0873A;padding:1rem 1.5rem;font-size:0.82rem;color:#6B7A85;line-height:1.7;max-width:600px;margin:2.5rem auto 0}
+.disclaimer strong{color:#C0873A}
+
+/* OVERLAY */
+.overlay{position:fixed;inset:0;z-index:200;display:none;flex-direction:column;background:#fff}
+.overlay.active{display:flex}
+.overlay-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;background:#1C2B35;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0}
+.overlay-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:#fff}
+.overlay-status{font-size:0.72rem;color:rgba(255,255,255,0.4);margin-top:0.1rem}
+.overlay-close{background:none;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);width:32px;height:32px;border-radius:2px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.overlay-close:hover{border-color:rgba(255,255,255,0.4);color:#fff}
+.overlay-body{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+.form-view{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;background:#FAFAF7}
+.form-card{background:#fff;padding:2.5rem;max-width:500px;width:100%;border-radius:2px;border:1px solid rgba(28,43,53,0.08);box-shadow:0 4px 24px rgba(28,43,53,0.06)}
+.form-card h2{font-family:'DM Serif Display',serif;font-size:1.8rem;color:#1C2B35;margin-bottom:0.5rem}
+.form-card>p{font-size:0.85rem;color:#6B7A85;margin-bottom:2rem;line-height:1.7}
+.form-field{padding:0.82rem 1rem;border:1px solid rgba(28,43,53,0.12);font-family:'DM Sans',sans-serif;font-size:0.88rem;color:#1C2B35;background:#fff;border-radius:2px;width:100%;transition:border-color 0.2s;outline:none;margin-bottom:0.8rem}
+.form-field:focus{border-color:#3A7D6E}
+.form-field::placeholder{color:#6B7A85}
+textarea.form-field{min-height:100px;resize:vertical}
+.form-note{font-size:0.72rem;color:#6B7A85;margin-bottom:1.2rem;line-height:1.6}
+.btn-send{background:#3A7D6E;color:#fff;padding:0.85rem;border:none;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;transition:background 0.2s;width:100%}
+.btn-send:hover{background:#4E9E8D}
+.btn-send:disabled{opacity:0.5;cursor:not-allowed}
+
+.chat-view{flex:1;display:none;flex-direction:column;overflow:hidden;background:#FAFAF7}
+.chat-view.active{display:flex}
+#messagesContainer{flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1rem;background:#FAFAF7}
+#messagesContainer::-webkit-scrollbar{width:3px}
+#messagesContainer::-webkit-scrollbar-thumb{background:rgba(28,43,53,0.12);border-radius:2px}
+.message{max-width:75%;padding:0.85rem 1.1rem;font-size:0.88rem;line-height:1.65;border-radius:12px}
+.message.user{background:#3A7D6E;color:#fff;align-self:flex-end;border-bottom-right-radius:2px}
+.message.therapist{background:#fff;color:#1C2B35;align-self:flex-start;border:1px solid rgba(28,43,53,0.1);border-bottom-left-radius:2px;box-shadow:0 1px 4px rgba(28,43,53,0.06)}
+.message.system{background:rgba(58,125,110,0.08);color:#3A7D6E;align-self:center;font-size:0.78rem;text-align:center;padding:0.5rem 1rem;border-radius:2px}
+.message-time{font-size:0.65rem;margin-top:0.3rem}
+.message.user .message-time{color:rgba(255,255,255,0.55);text-align:right}
+.message.therapist .message-time{color:#6B7A85}
+
+/* MEDDELANDEGRÄNS */
+.msg-limit-bar{background:#fff;padding:0.6rem 1.2rem;border-top:1px solid rgba(28,43,53,0.06);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.msg-limit-text{font-size:0.72rem;color:#6B7A85}
+.msg-limit-count{font-size:0.72rem;font-weight:500;color:#1C2B35}
+.msg-limit-count.warning{color:#C0873A}
+.msg-limit-count.full{color:#c0392b}
+
+.chat-inputbar{padding:1rem 1.2rem;background:#fff;border-top:1px solid rgba(28,43,53,0.08);display:flex;gap:0.5rem;flex-shrink:0}
+#messageInput{flex:1;background:#F2EDE5;border:none;padding:0.7rem 1rem;color:#1C2B35;font-family:'DM Sans',sans-serif;font-size:0.88rem;border-radius:20px;outline:none;resize:none;min-height:42px;max-height:120px}
+#messageInput::placeholder{color:#6B7A85}
+#sendBtn{background:#3A7D6E;border:none;color:#fff;padding:0.7rem 1.2rem;border-radius:20px;cursor:pointer;font-size:0.85rem;font-weight:500;font-family:'DM Sans',sans-serif;transition:background 0.2s}
+#sendBtn:hover{background:#4E9E8D}
+#sendBtn:disabled{opacity:0.4;cursor:not-allowed}
+.input-note{font-size:0.68rem;color:#6B7A85;text-align:center;padding:0.4rem;background:#fff;flex-shrink:0;border-top:1px solid rgba(28,43,53,0.04)}
+
+.limit-reached{display:none;flex:1;align-items:center;justify-content:center;flex-direction:column;padding:2rem;text-align:center;background:#FAFAF7}
+.limit-reached.active{display:flex}
+.limit-reached h3{font-family:'DM Serif Display',serif;font-size:1.5rem;color:#1C2B35;margin-bottom:0.8rem}
+.limit-reached p{font-size:0.88rem;color:#6B7A85;max-width:340px;line-height:1.75;margin-bottom:1.5rem}
+.limit-reached a{background:#3A7D6E;color:#fff;padding:0.85rem 2rem;border-radius:2px;text-decoration:none;font-size:0.9rem;font-weight:500}
+
+footer{background:#1C2B35;padding:4.5rem 8% 2rem}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:2rem}
+.footer-brand{font-family:'DM Serif Display',serif;font-size:1.6rem;color:#fff;margin-bottom:0.9rem;display:block;text-decoration:none}
+.footer-tagline{font-size:0.85rem;color:rgba(255,255,255,0.35);line-height:1.75;max-width:260px;font-weight:300}
+.footer-col h4{font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:1.1rem}
+.footer-col ul{list-style:none}
+.footer-col li{margin-bottom:0.5rem}
+.footer-col a{color:rgba(255,255,255,0.35);text-decoration:none;font-size:0.85rem;transition:color 0.2s;font-weight:300}
+.footer-col a:hover{color:#fff}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;color:rgba(255,255,255,0.25);flex-wrap:wrap;gap:0.5rem}
+.footer-crisis{color:#4E9E8D;font-weight:500}
+
+@media(max-width:800px){
+  .info-grid{grid-template-columns:1fr 1fr}
+  .page-hero h1{font-size:2.4rem}
+  .footer-top{grid-template-columns:1fr 1fr}
+  .form-card{padding:1.5rem}
+}
+@media(max-width:500px){.info-grid{grid-template-columns:1fr}}
+.footer-legal{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.04)}
+.footer-legal a{color:rgba(255,255,255,0.2);text-decoration:none;font-size:0.75rem;transition:color 0.2s}
+.footer-legal a:hover{color:rgba(255,255,255,0.5)}
+</style>
+</head>
+<body>
+
+<!-- DISCLAIMER POPUP -->
+<div class="disclaimer-popup" id="disclaimerPopup">
+  <div class="disclaimer-box">
+    <h2>Viktig information</h2>
+    <p>Innan du börjar chatta med en terapeut, läs detta:</p>
+    <ul>
+      <li>Terapeut-chatten ersätter inte akut psykiatrisk vård eller krishjälp</li>
+      <li>Du kan skicka upp till <strong>10 meddelanden per månad</strong> inom PREMIUM-planen</li>
+      <li>Terapeuten svarar inom 24 timmar på vardagar — inte direkt</li>
+      <li>Vid akut kris eller fara för dig själv — ring 112 eller 90101 omedelbart</li>
+      <li>All kommunikation är konfidentiell och hanteras enligt GDPR</li>
+    </ul>
+    <button class="disclaimer-accept" onclick="acceptDisclaimer()">Jag förstår — starta chatten</button>
+    <div class="disclaimer-crisis">Akut kris? Ring <a href="tel:90101">90101</a> (Mind, dygnet runt) eller <a href="tel:112">112</a></div>
+  </div>
+</div>
+
+<!-- HAMBURGER -->
+<div class="nav-menu-overlay" id="navOverlay" onclick="closeMenu()"></div>
+<div class="nav-menu" id="navMenu">
+  <ul>
+    <div class="nav-menu-label">Plattformen</div>
+    <li><a href="index.html">Hem</a></li>
+    <li><a href="chat.html">AI-Chat</a></li>
+    <li><a href="terapeut.html" class="active">Terapeut</a></li>
+    <li><a href="halsa.html">Min hälsa</a></li>
+    <li><a href="ovningar.html">Övningar</a></li>
+    <li><a href="artiklar.html">Artiklar</a></li>
+    <li><a href="berattelser.html">Berättelser</a></li>
+    <li><a href="community.html">Community</a></li>
+    <div class="nav-menu-label">Konto</div>
+    <li><a href="priser.html">Priser</a></li>
+    <li><a href="konto.html">Mitt konto</a></li>
+    <li><a href="appen.html" class="nav-menu-cta">Appen</a></li>
+  </ul>
+  <div class="nav-menu-bottom">
+    <a href="om-oss.html">Om oss</a>
+    <a href="resurser.html">Resurser & hjälplinjer</a>
+    <a href="produkter.html">Produkter</a>
+    <a href="mailto:kontakt@tryggman.se">Kontakt</a>
+  </div>
+</div>
+
+<nav>
+  <a href="index.html" class="nav-logo">Tryggman</a>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Meny">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page-hero">
+  <div class="section-label">Professionellt stöd</div>
+  <h1>Chatta med en<br><em>certifierad terapeut</em></h1>
+  <p>Skicka ett meddelande och få svar från en certifierad terapeut inom 24 timmar. Ingen bokning. Ingen väntrumskänsla. På dina villkor. Max 10 meddelanden per månad.</p>
+  <button class="btn-primary" onclick="openOverlay()">Starta samtal med terapeut</button>
+</div>
+
+<section class="info-section">
+  <div style="max-width:1100px;margin:0 auto">
+    <div class="section-label">Hur det fungerar</div>
+    <h2 class="section-title">Enkelt från start</h2>
+    <p class="section-body">Inga telefonsamtal, ingen bokning, ingen väntrumskänsla.</p>
+    <div class="info-grid">
+      <div class="info-card"><div class="info-icon">✍️</div><div class="info-title">Skriv</div><div class="info-text">Berätta vad du vill prata om – i din egen takt, utan press.</div></div>
+      <div class="info-card"><div class="info-icon">⏱</div><div class="info-title">Vänta max 24h</div><div class="info-text">En certifierad terapeut läser och svarar på ditt meddelande.</div></div>
+      <div class="info-card"><div class="info-icon">💬</div><div class="info-title">Fortsätt dialogen</div><div class="info-text">Ni kan ha en löpande dialog i din takt. Max 10 meddelanden/månad.</div></div>
+      <div class="info-card"><div class="info-icon">🔒</div><div class="info-title">Konfidentiellt</div><div class="info-text">Dina meddelanden är krypterade och hanteras med full sekretess.</div></div>
+    </div>
+    <div class="disclaimer"><strong>Viktigt:</strong> Tjänsten ersätter inte akut psykiatrisk vård. Detta är ett komplement till, inte ersättning för, professionell vård. Vid kris — ring <strong>90101</strong> (Mind, dygnet runt) eller <strong>112</strong>.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-top">
+    <div><a href="index.html" class="footer-brand">Tryggman</a><p class="footer-tagline">Där trygghet skapas. Tillsammans bryter vi tystnaden.</p></div>
+    <div class="footer-col"><h4>Plattformen</h4><ul>
+      <li><a href="chat.html">AI-Chat</a></li>
+      <li><a href="terapeut.html">Terapeut</a></li>
+      <li><a href="community.html">Community</a></li>
+      <li><a href="halsa.html">Min hälsa</a></li>
+      <li><a href="ovningar.html">Övningar</a></li>
+      <li><a href="appen.html">Appen</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Innehåll</h4><ul>
+      <li><a href="artiklar.html">Artiklar</a></li>
+      <li><a href="berattelser.html">Berättelser</a></li>
+      <li><a href="resurser.html">Resurser</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Om Tryggman</h4><ul>
+      <li><a href="om-oss.html">Om oss</a></li>
+      <li><a href="priser.html">Priser</a></li>
+      <li><a href="produkter.html">Produkter</a></li>
+      <li><a href="mailto:kontakt@tryggman.se">Kontakt</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom"><div>© 2026 Tryggman</div><div class="footer-crisis">Kris? Ring 90101 eller 112</div></div>
+  <div class="footer-legal"><a href="integritetspolicy.html">Integritetspolicy</a><a href="anvandarvillkor.html">Användarvillkor</a><a href="cookies.html">Cookies</a></div>
+</footer>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay">
+  <div class="overlay-header">
+    <div>
+      <div class="overlay-title">Tryggman Terapeut</div>
+      <div class="overlay-status">Certifierad terapeut · Svarar inom 24h · Max 10 meddelanden/månad</div>
+    </div>
+    <button class="overlay-close" onclick="closeOverlay()">✕</button>
+  </div>
+  <div class="overlay-body">
+    <div class="form-view" id="formView">
+      <div class="form-card">
+        <h2>Starta ditt samtal</h2>
+        <p>Fyll i dina uppgifter och berätta kort vad du vill prata om. En terapeut svarar inom 24 timmar.</p>
+        <input class="form-field" type="text" id="userName" placeholder="Ditt namn eller alias *">
+        <input class="form-field" type="email" id="userEmail" placeholder="E-post *">
+        <textarea class="form-field" id="firstMessage" placeholder="Vad vill du prata om? *"></textarea>
+        <p class="form-note">🔒 Dina uppgifter hanteras konfidentiellt. Max 10 meddelanden per månad ingår i PREMIUM.</p>
+        <button class="btn-send" id="startBtn" onclick="startConversation()">Skicka och starta samtal →</button>
+      </div>
+    </div>
+
+    <div class="chat-view" id="chatView">
+      <div class="msg-limit-bar">
+        <span class="msg-limit-text">Meddelanden denna månad</span>
+        <span class="msg-limit-count" id="msgLimitCount">0 / 10</span>
+      </div>
+      <div id="messagesContainer"></div>
+      <div class="limit-reached" id="limitReached">
+        <h3>Månadsgränsen nådd</h3>
+        <p>Du har använt dina 10 meddelanden för denna månad. Gränsen återställs nästa månad.</p>
+        <a href="priser.html">Se våra planer</a>
+      </div>
+      <div class="chat-inputbar" id="chatInputBar">
+        <textarea id="messageInput" placeholder="Skriv ett meddelande..." rows="1"></textarea>
+        <button id="sendBtn" onclick="sendMessage()">Skicka</button>
+      </div>
+      <div class="input-note">Svar inom 24 timmar · Konfidentiellt · Certifierad terapeut</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, getDoc, setDoc, increment } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC-hMsjidzd--a4buvtAapLWpXmbj2yaH4",
+  authDomain: "tryggman-b89fa.firebaseapp.com",
+  projectId: "tryggman-b89fa",
+  storageBucket: "tryggman-b89fa.firebasestorage.app",
+  messagingSenderId: "871100564839",
+  appId: "1:871100564839:web:0515b9d9d706706c335bc2"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+let conversationId = null;
+const MAX_MESSAGES = 10;
+
+// Hämta månadsräknare från localStorage
+function getMonthKey() {
+  const now = new Date();
+  return `tryggman_msg_count_${now.getFullYear()}_${now.getMonth()}`;
+}
+function getMsgCount() { return parseInt(localStorage.getItem(getMonthKey()) || '0'); }
+function incrementMsgCount() {
+  const key = getMonthKey();
+  const count = getMsgCount() + 1;
+  localStorage.setItem(key, count);
+  return count;
+}
+function updateLimitUI() {
+  const count = getMsgCount();
+  const el = document.getElementById('msgLimitCount');
+  if (!el) return;
+  el.textContent = `${count} / ${MAX_MESSAGES}`;
+  el.classList.toggle('warning', count >= 7);
+  el.classList.toggle('full', count >= MAX_MESSAGES);
+  if (count >= MAX_MESSAGES) {
+    document.getElementById('chatInputBar').style.display = 'none';
+    document.getElementById('limitReached').classList.add('active');
+  }
+}
+
+// HAMBURGER
+window.toggleMenu = function() {
+  const menu = document.getElementById('navMenu');
+  const overlay = document.getElementById('navOverlay');
+  const hamburger = document.getElementById('hamburger');
+  menu.classList.toggle('open');
+  overlay.classList.toggle('open');
+  hamburger.classList.toggle('open');
+  document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+};
+window.closeMenu = function() {
+  document.getElementById('navMenu').classList.remove('open');
+  document.getElementById('navOverlay').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.body.style.overflow = '';
+};
+document.querySelectorAll('.nav-menu a').forEach(a => a.addEventListener('click', window.closeMenu));
+
+// DISCLAIMER
+window.acceptDisclaimer = function() {
+  localStorage.setItem('tryggman_terapeut_disclaimer', 'accepted');
+  document.getElementById('disclaimerPopup').classList.add('hidden');
+};
+if (localStorage.getItem('tryggman_terapeut_disclaimer') === 'accepted') {
+  document.getElementById('disclaimerPopup').classList.add('hidden');
+}
+
+window.openOverlay = async function() {
+  // Auth check
+  const user = auth.currentUser;
+  if (!user) {
+    window.location.href = 'login.html?redirect=terapeut.html';
+    return;
+  }
+  // Plan check
+  try {
+    const { getFirestore, doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const db = getFirestore(app);
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    const plan = snap.exists() ? snap.data().plan : 'free';
+    if (plan !== 'premium') {
+      document.getElementById('overlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+      document.getElementById('formView').style.display = 'none';
+      document.getElementById('chatView').classList.remove('active');
+      document.getElementById('limitReached').classList.remove('active');
+      document.querySelector('.overlay-body').innerHTML = `
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;background:#FAFAF7">
+          <div style="background:#fff;padding:2.5rem;max-width:460px;width:100%;border-radius:2px;border-top:3px solid #3A7D6E;text-align:center;box-shadow:0 4px 24px rgba(28,43,53,0.08)">
+            <div style="font-size:2rem;margin-bottom:1rem">🔒</div>
+            <h2 style="font-family:'DM Serif Display',serif;font-size:1.6rem;color:#1C2B35;margin-bottom:0.8rem">Terapeut-chatt kräver PREMIUM</h2>
+            <p style="font-size:0.88rem;color:#6B7A85;line-height:1.75;margin-bottom:1.5rem">Uppgradera till PREMIUM för att chatta med en certifierad terapeut. Svar inom 24 timmar, max 10 meddelanden per månad.</p>
+            <a href="priser.html" style="background:#3A7D6E;color:#fff;padding:0.9rem 2rem;border-radius:2px;text-decoration:none;font-size:0.9rem;font-weight:500;display:inline-block;margin-bottom:0.8rem">Uppgradera till PREMIUM — 349 kr/mån</a>
+            <br><button onclick="closeOverlay()" style="background:none;border:none;color:#6B7A85;font-size:0.82rem;cursor:pointer;margin-top:0.5rem;font-family:'DM Sans',sans-serif">Stäng</button>
+          </div>
+        </div>`;
+      return;
+    }
+  } catch(e) { console.error(e); }
+
+  document.getElementById('overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  const savedId = localStorage.getItem('tryggman_conv_id');
+  if (savedId) {
+    conversationId = savedId;
+    showChatView();
+    listenToMessages();
+    updateLimitUI();
+  }
+};
+
+window.closeOverlay = function() {
+  document.getElementById('overlay').classList.remove('active');
+  document.body.style.overflow = '';
+};
+
+window.startConversation = async function() {
+  const name = document.getElementById('userName').value.trim();
+  const email = document.getElementById('userEmail').value.trim();
+  const message = document.getElementById('firstMessage').value.trim();
+  if (!name || !email || !message) { alert('Vänligen fyll i alla fält.'); return; }
+  const btn = document.getElementById('startBtn');
+  btn.disabled = true;
+  btn.textContent = 'Skickar...';
+  try {
+    const convRef = await addDoc(collection(db, 'conversations'), {
+      userName: name, userEmail: email, createdAt: serverTimestamp(), status: 'active'
+    });
+    conversationId = convRef.id;
+    localStorage.setItem('tryggman_conv_id', conversationId);
+    await addDoc(collection(db, 'conversations', conversationId, 'messages'), {
+      role: 'user', content: message, timestamp: serverTimestamp()
+    });
+    await addDoc(collection(db, 'conversations', conversationId, 'messages'), {
+      role: 'system', content: '✓ Ditt meddelande är skickat. En terapeut svarar inom 24 timmar.', timestamp: serverTimestamp()
+    });
+    incrementMsgCount();
+    showChatView();
+    listenToMessages();
+    updateLimitUI();
+  } catch(e) {
+    console.error(e);
+    btn.disabled = false;
+    btn.textContent = 'Skicka och starta samtal →';
+    alert('Något gick fel. Försök igen.');
+  }
+};
+
+window.sendMessage = async function() {
+  if (getMsgCount() >= MAX_MESSAGES) return;
+  const input = document.getElementById('messageInput');
+  const message = input.value.trim();
+  if (!message || !conversationId) return;
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  input.value = '';
+  input.style.height = 'auto';
+  try {
+    await addDoc(collection(db, 'conversations', conversationId, 'messages'), {
+      role: 'user', content: message, timestamp: serverTimestamp()
+    });
+    incrementMsgCount();
+    updateLimitUI();
+  } catch(e) { console.error(e); }
+  finally { btn.disabled = false; }
+};
+
+function showChatView() {
+  document.getElementById('formView').style.display = 'none';
+  document.getElementById('chatView').classList.add('active');
+}
+
+function listenToMessages() {
+  const q = query(collection(db, 'conversations', conversationId, 'messages'), orderBy('timestamp', 'asc'));
+  onSnapshot(q, (snapshot) => {
+    const container = document.getElementById('messagesContainer');
+    container.innerHTML = '';
+    snapshot.forEach(docSnap => {
+      const msg = docSnap.data();
+      const div = document.createElement('div');
+      div.className = `message ${msg.role}`;
+      const content = document.createElement('div');
+      content.textContent = msg.content;
+      div.appendChild(content);
+      if (msg.timestamp && msg.role !== 'system') {
+        const time = document.createElement('div');
+        time.className = 'message-time';
+        const date = msg.timestamp.toDate ? msg.timestamp.toDate() : new Date();
+        time.textContent = date.toLocaleTimeString('sv-SE', {hour:'2-digit', minute:'2-digit'});
+        div.appendChild(time);
+      }
+      container.appendChild(div);
+    });
+    container.scrollTop = container.scrollHeight;
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('messageInput');
+  if (input) {
+    input.addEventListener('input', (e) => {
+      e.target.style.height = 'auto';
+      e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); window.sendMessage(); }
+    });
+  }
+});
+</script>
+</body></html>

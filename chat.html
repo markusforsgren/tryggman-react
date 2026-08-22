@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<title>AI-Chat — Tryggman</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:#FAFAF7;color:#1C2B35;line-height:1.6;overflow-x:hidden}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.1rem 6%;background:rgba(28,43,53,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05)}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:#fff;letter-spacing:0.02em;text-decoration:none}
+
+.hamburger{background:none;border:none;cursor:pointer;padding:0.3rem;display:flex;flex-direction:column;gap:5px;z-index:102}
+.hamburger span{display:block;width:24px;height:2px;background:#fff;transition:all 0.3s ease;border-radius:2px}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;transform:translateX(-8px)}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-menu{position:fixed;top:0;right:-100%;width:280px;height:100vh;background:#1C2B35;z-index:101;transition:right 0.35s ease;display:flex;flex-direction:column;padding:5rem 2rem 2rem;box-shadow:-8px 0 32px rgba(0,0,0,0.3)}
+.nav-menu.open{right:0}
+.nav-menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;display:none;backdrop-filter:blur(2px)}
+.nav-menu-overlay.open{display:block}
+.nav-menu ul{list-style:none;display:flex;flex-direction:column;gap:0.2rem;flex:1}
+.nav-menu ul li a{display:block;padding:0.75rem 0.8rem;color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.95rem;font-weight:400;border-radius:2px;transition:all 0.2s}
+.nav-menu ul li a:hover,.nav-menu ul li a.active{color:#fff;background:rgba(255,255,255,0.05)}
+.nav-menu ul li a.active{color:#4E9E8D}
+.nav-menu-cta{background:#3A7D6E!important;color:#fff!important;font-weight:500!important;margin-top:0.5rem}
+.nav-menu-cta:hover{background:#4E9E8D!important}
+.nav-menu-bottom{border-top:1px solid rgba(255,255,255,0.06);padding-top:1.2rem;margin-top:auto}
+.nav-menu-bottom a{display:block;padding:0.5rem 0.8rem;color:rgba(255,255,255,0.3);text-decoration:none;font-size:0.82rem;transition:color 0.2s}
+.nav-menu-bottom a:hover{color:rgba(255,255,255,0.6)}
+.nav-menu-label{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:0 0.8rem;margin-bottom:0.3rem;margin-top:1rem}
+
+.page-hero{padding:7rem 8% 5rem;background:#1C2B35;margin-top:62px;min-height:60vh;display:flex;flex-direction:column;justify-content:center}
+.section-label{font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:#4E9E8D;margin-bottom:0.9rem}
+.page-hero h1{font-family:'DM Serif Display',serif;font-size:3.5rem;line-height:1.1;color:#fff;margin-bottom:1rem}
+.page-hero h1 em{font-style:italic;color:#4E9E8D}
+.page-hero p{font-size:1rem;color:rgba(255,255,255,0.5);max-width:520px;font-weight:300;line-height:1.85;margin-bottom:2.5rem}
+.btn-primary{background:#3A7D6E;color:#fff;padding:0.9rem 2.2rem;border:none;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:500;cursor:pointer;transition:background 0.2s;display:inline-block;letter-spacing:0.02em}
+.btn-primary:hover{background:#4E9E8D}
+
+.info-section{padding:5rem 8%;background:#F2EDE5}
+.info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;max-width:1100px;margin:0 auto}
+.info-card{background:#fff;padding:1.8rem;border-top:3px solid #1C2B35}
+.info-icon{font-size:1.5rem;margin-bottom:0.8rem}
+.info-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:#1C2B35;margin-bottom:0.5rem}
+.info-text{font-size:0.82rem;color:#6B7A85;line-height:1.7;font-weight:300}
+.section-title{font-family:'DM Serif Display',serif;font-size:2.4rem;color:#1C2B35;margin-bottom:0.5rem}
+.section-body{font-size:0.95rem;color:#6B7A85;margin-bottom:2.5rem;font-weight:300}
+.disclaimer{background:rgba(192,135,58,0.1);border-left:3px solid #C0873A;padding:1rem 1.5rem;font-size:0.82rem;color:#6B7A85;line-height:1.7;max-width:600px;margin:2.5rem auto 0}
+.disclaimer strong{color:#C0873A}
+
+/* DISCLAIMER POPUP */
+.disclaimer-popup{position:fixed;inset:0;background:rgba(28,43,53,0.7);z-index:300;display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
+.disclaimer-popup.hidden{display:none}
+.disclaimer-box{background:#fff;padding:2.5rem;max-width:480px;width:100%;border-radius:2px;border-top:4px solid #C0873A;box-shadow:0 16px 48px rgba(28,43,53,0.2)}
+.disclaimer-box h2{font-family:'DM Serif Display',serif;font-size:1.6rem;color:#1C2B35;margin-bottom:0.8rem}
+.disclaimer-box p{font-size:0.88rem;color:#6B7A85;line-height:1.75;margin-bottom:1rem}
+.disclaimer-box ul{list-style:none;margin-bottom:1.5rem;display:flex;flex-direction:column;gap:0.5rem}
+.disclaimer-box ul li{font-size:0.85rem;color:#1C2B35;display:flex;align-items:flex-start;gap:0.6rem}
+.disclaimer-box ul li::before{content:'•';color:#C0873A;font-weight:700;flex-shrink:0}
+.disclaimer-accept{width:100%;background:#3A7D6E;color:#fff;border:none;padding:0.9rem;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;transition:background 0.2s}
+.disclaimer-accept:hover{background:#4E9E8D}
+.disclaimer-crisis{font-size:0.72rem;color:#6B7A85;text-align:center;margin-top:0.8rem}
+.disclaimer-crisis a{color:#3A7D6E;text-decoration:none}
+
+/* OVERLAY */
+.overlay{position:fixed;inset:0;z-index:200;display:none;flex-direction:column;background:#FAFAF7}
+.overlay.active{display:flex}
+.overlay-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;background:#1C2B35;flex-shrink:0}
+.overlay-left{display:flex;align-items:center;gap:0.8rem}
+.chat-dot{width:8px;height:8px;border-radius:50%;background:#3A7D6E;box-shadow:0 0 0 3px rgba(58,125,110,0.2)}
+.overlay-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:#fff}
+.overlay-status{font-size:0.72rem;color:rgba(255,255,255,0.4);margin-top:0.1rem}
+.overlay-right{display:flex;align-items:center;gap:0.8rem}
+.new-chat-btn{background:none;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);padding:0.3rem 0.8rem;font-size:0.72rem;font-family:'DM Sans',sans-serif;cursor:pointer;border-radius:2px;transition:all 0.2s}
+.new-chat-btn:hover{border-color:rgba(255,255,255,0.4);color:#fff}
+.overlay-close{background:none;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);width:32px;height:32px;border-radius:2px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.overlay-close:hover{border-color:rgba(255,255,255,0.4);color:#fff}
+
+.quick-prompts{display:flex;flex-wrap:wrap;gap:0.5rem;padding:0.8rem 1.2rem;background:#fff;border-bottom:1px solid rgba(28,43,53,0.08);flex-shrink:0}
+.qp{background:#F2EDE5;border:1px solid rgba(28,43,53,0.1);color:#6B7A85;padding:0.35rem 0.8rem;font-size:0.75rem;font-family:'DM Sans',sans-serif;cursor:pointer;border-radius:20px;transition:all 0.2s}
+.qp:hover{background:#3A7D6E;border-color:#3A7D6E;color:#fff}
+
+#messagesContainer{flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1rem;background:#FAFAF7}
+#messagesContainer::-webkit-scrollbar{width:3px}
+#messagesContainer::-webkit-scrollbar-thumb{background:rgba(28,43,53,0.12);border-radius:2px}
+
+.welcome-message{color:#6B7A85;max-width:440px;align-self:flex-start}
+.welcome-message h2{font-family:'DM Serif Display',serif;font-size:1.6rem;color:#1C2B35;margin-bottom:0.8rem}
+.welcome-message p{font-size:0.88rem;line-height:1.75;margin-bottom:1rem;font-weight:300}
+.safety-note{background:rgba(192,135,58,0.08);border-left:3px solid #C0873A;padding:0.8rem 1rem;font-size:0.78rem;color:#6B7A85}
+.safety-note strong{color:#C0873A}
+
+.message{max-width:75%;padding:0.85rem 1.1rem;font-size:0.88rem;line-height:1.65;border-radius:12px}
+.message.user{background:#3A7D6E;color:#fff;align-self:flex-end;border-bottom-right-radius:2px}
+.message.ai{background:#fff;color:#1C2B35;align-self:flex-start;border:1px solid rgba(28,43,53,0.1);border-bottom-left-radius:2px;box-shadow:0 1px 4px rgba(28,43,53,0.06)}
+.message.crisis-message{background:rgba(192,135,58,0.08);border:1px solid rgba(192,135,58,0.3);border-left:3px solid #C0873A}
+.message-content{white-space:pre-wrap}
+.message-time{font-size:0.65rem;margin-top:0.3rem}
+.message.user .message-time{color:rgba(255,255,255,0.55);text-align:right}
+.message.ai .message-time{color:#6B7A85}
+
+.typing-indicator{display:flex;gap:4px;padding:0.8rem 1.1rem;align-self:flex-start;background:#fff;border-radius:12px;border:1px solid rgba(28,43,53,0.1);box-shadow:0 1px 4px rgba(28,43,53,0.06)}
+.typing-indicator span{width:5px;height:5px;background:#6B7A85;border-radius:50%;animation:blink 1.2s infinite}
+.typing-indicator span:nth-child(2){animation-delay:0.2s}
+.typing-indicator span:nth-child(3){animation-delay:0.4s}
+@keyframes blink{0%,100%{opacity:0.3}50%{opacity:1}}
+
+.chat-inputbar{padding:1rem 1.2rem;background:#fff;border-top:1px solid rgba(28,43,53,0.08);display:flex;gap:0.5rem;flex-shrink:0}
+#messageInput{flex:1;background:#F2EDE5;border:none;padding:0.7rem 1rem;color:#1C2B35;font-family:'DM Sans',sans-serif;font-size:0.88rem;border-radius:20px;outline:none;resize:none;min-height:42px;max-height:150px}
+#messageInput::placeholder{color:#6B7A85}
+#sendBtn{background:#3A7D6E;border:none;color:#fff;padding:0.7rem 1.2rem;border-radius:20px;cursor:pointer;font-size:0.85rem;font-weight:500;font-family:'DM Sans',sans-serif;transition:background 0.2s}
+#sendBtn:hover{background:#4E9E8D}
+#sendBtn:disabled{opacity:0.4;cursor:not-allowed}
+
+.chat-footer{display:flex;justify-content:space-between;align-items:center;padding:0.4rem 1.2rem;background:#fff;border-top:1px solid rgba(28,43,53,0.04);flex-shrink:0}
+.char-count{font-size:0.68rem;color:#6B7A85}
+.crisis-note{font-size:0.68rem;color:#6B7A85}
+
+.crisis-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;align-items:center;justify-content:center}
+.crisis-modal.active{display:flex}
+.crisis-modal-box{background:#fff;border:1px solid rgba(192,135,58,0.3);border-top:3px solid #C0873A;padding:2rem;max-width:460px;width:90%;box-shadow:0 8px 32px rgba(28,43,53,0.15)}
+.crisis-modal-box h3{font-family:'DM Serif Display',serif;font-size:1.5rem;color:#1C2B35;margin-bottom:0.8rem}
+.crisis-modal-box p{font-size:0.88rem;color:#6B7A85;line-height:1.75;margin-bottom:1.2rem}
+.crisis-numbers{display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.5rem}
+.crisis-num{background:rgba(192,135,58,0.06);border-left:3px solid #C0873A;padding:0.6rem 1rem}
+.crisis-num strong{color:#C0873A;display:block;font-size:1.1rem}
+.crisis-num span{font-size:0.78rem;color:#6B7A85}
+.modal-close{background:#3A7D6E;border:none;color:#fff;padding:0.7rem 1.5rem;border-radius:2px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.88rem}
+
+footer{background:#1C2B35;padding:4.5rem 8% 2rem}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:2rem}
+.footer-brand{font-family:'DM Serif Display',serif;font-size:1.6rem;color:#fff;margin-bottom:0.9rem;display:block;text-decoration:none}
+.footer-tagline{font-size:0.85rem;color:rgba(255,255,255,0.35);line-height:1.75;max-width:260px;font-weight:300}
+.footer-col h4{font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:1.1rem}
+.footer-col ul{list-style:none}
+.footer-col li{margin-bottom:0.5rem}
+.footer-col a{color:rgba(255,255,255,0.35);text-decoration:none;font-size:0.85rem;transition:color 0.2s;font-weight:300}
+.footer-col a:hover{color:#fff}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;color:rgba(255,255,255,0.25);flex-wrap:wrap;gap:0.5rem}
+.footer-crisis{color:#4E9E8D;font-weight:500}
+
+@media(max-width:800px){
+  .info-grid{grid-template-columns:1fr 1fr}
+  .page-hero h1{font-size:2.4rem}
+  .footer-top{grid-template-columns:1fr 1fr}
+}
+@media(max-width:500px){.info-grid{grid-template-columns:1fr}}
+.footer-legal{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.04)}
+.footer-legal a{color:rgba(255,255,255,0.2);text-decoration:none;font-size:0.75rem;transition:color 0.2s}
+.footer-legal a:hover{color:rgba(255,255,255,0.5)}
+</style>
+</head>
+<body>
+
+<!-- DISCLAIMER POPUP -->
+<div class="disclaimer-popup" id="disclaimerPopup">
+  <div class="disclaimer-box">
+    <h2>Viktig information</h2>
+    <p>Innan du börjar prata med AI-rådgivaren, läs detta:</p>
+    <ul>
+      <li>AI-chatten är ett stödverktyg — den ersätter inte professionell psykiatrisk vård</li>
+      <li>AI:n är inte en legitimerad terapeut eller läkare</li>
+      <li>Vid akut kris eller fara för dig själv eller andra — ring 112 eller 90101 omedelbart</li>
+      <li>Dina meddelanden är krypterade och sparas inte kopplat till din identitet</li>
+    </ul>
+    <button class="disclaimer-accept" onclick="acceptDisclaimer()">Jag förstår — starta chatten</button>
+    <div class="disclaimer-crisis">Akut kris? Ring <a href="tel:90101">90101</a> (Mind, dygnet runt) eller <a href="tel:112">112</a></div>
+  </div>
+</div>
+
+<!-- HAMBURGER MENY -->
+<div class="nav-menu-overlay" id="navOverlay" onclick="closeMenu()"></div>
+<div class="nav-menu" id="navMenu">
+  <ul>
+    <div class="nav-menu-label">Plattformen</div>
+    <li><a href="index.html">Hem</a></li>
+    <li><a href="chat.html" class="active">AI-Chat</a></li>
+    <li><a href="terapeut.html">Terapeut</a></li>
+    <li><a href="halsa.html">Min hälsa</a></li>
+    <li><a href="ovningar.html">Övningar</a></li>
+    <li><a href="artiklar.html">Artiklar</a></li>
+    <li><a href="berattelser.html">Berättelser</a></li>
+    <li><a href="community.html">Community</a></li>
+    <div class="nav-menu-label">Konto</div>
+    <li><a href="priser.html">Priser</a></li>
+    <li><a href="konto.html">Mitt konto</a></li>
+    <li><a href="appen.html" class="nav-menu-cta">Appen</a></li>
+  </ul>
+  <div class="nav-menu-bottom">
+    <a href="om-oss.html">Om oss</a>
+    <a href="resurser.html">Resurser & hjälplinjer</a>
+    <a href="produkter.html">Produkter</a>
+    <a href="mailto:kontakt@tryggman.se">Kontakt</a>
+  </div>
+</div>
+
+<nav>
+  <a href="index.html" class="nav-logo">Tryggman</a>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Meny">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page-hero">
+  <div class="section-label">Stöd dygnet runt</div>
+  <h1>Prata med<br><em>någon som lyssnar</em></h1>
+  <p>Vår AI-rådgivare finns här när du behöver det — mitt i natten, tidigt på morgonen, när det känns tungt. Ingen väntetid. Ingen bokning. Ingen dom.</p>
+  <button class="btn-primary" onclick="openOverlay()">Starta samtal med AI-rådgivaren</button>
+</div>
+
+<section class="info-section">
+  <div style="max-width:1100px;margin:0 auto">
+    <div class="section-label">Om AI-rådgivaren</div>
+    <h2 class="section-title">Alltid tillgänglig</h2>
+    <p class="section-body">En samtalspartner som lyssnar utan att döma — dygnet runt, anonymt, utan väntetid.</p>
+    <div class="info-grid">
+      <div class="info-card"><div class="info-icon">🕐</div><div class="info-title">Dygnet runt</div><div class="info-text">Tillgänglig 24/7, oavsett tid på dygnet eller veckodag.</div></div>
+      <div class="info-card"><div class="info-icon">🔒</div><div class="info-title">Anonymt</div><div class="info-text">Inget namn krävs. Vi sparar inget om dig.</div></div>
+      <div class="info-card"><div class="info-icon">💬</div><div class="info-title">Lyssnar aktivt</div><div class="info-text">Ställer frågor som hjälper dig tänka djupare, utan att döma.</div></div>
+      <div class="info-card"><div class="info-icon">🤝</div><div class="info-title">Hänvisar vidare</div><div class="info-text">Vid behov hänvisar AI:n till certifierade terapeuter eller krislinjer.</div></div>
+    </div>
+    <div class="disclaimer"><strong>Viktigt:</strong> AI-chatten ersätter inte professionell vård. Detta är ett stödverktyg. Vid kris — ring <strong>90101</strong> (Mind, dygnet runt) eller <strong>112</strong>.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-top">
+    <div><a href="index.html" class="footer-brand">Tryggman</a><p class="footer-tagline">Där trygghet skapas. Tillsammans bryter vi tystnaden.</p></div>
+    <div class="footer-col"><h4>Plattformen</h4><ul>
+      <li><a href="chat.html">AI-Chat</a></li>
+      <li><a href="terapeut.html">Terapeut</a></li>
+      <li><a href="community.html">Community</a></li>
+      <li><a href="halsa.html">Min hälsa</a></li>
+      <li><a href="ovningar.html">Övningar</a></li>
+      <li><a href="appen.html">Appen</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Innehåll</h4><ul>
+      <li><a href="artiklar.html">Artiklar</a></li>
+      <li><a href="berattelser.html">Berättelser</a></li>
+      <li><a href="resurser.html">Resurser</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Om Tryggman</h4><ul>
+      <li><a href="om-oss.html">Om oss</a></li>
+      <li><a href="priser.html">Priser</a></li>
+      <li><a href="produkter.html">Produkter</a></li>
+      <li><a href="mailto:kontakt@tryggman.se">Kontakt</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom"><div>© 2026 Tryggman</div><div class="footer-crisis">Kris? Ring 90101 eller 112</div></div>
+  <div class="footer-legal"><a href="integritetspolicy.html">Integritetspolicy</a><a href="anvandarvillkor.html">Användarvillkor</a><a href="cookies.html">Cookies</a></div>
+</footer>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay">
+  <div class="overlay-header">
+    <div class="overlay-left">
+      <div class="chat-dot"></div>
+      <div>
+        <div class="overlay-title">Tryggman AI-rådgivare</div>
+        <div class="overlay-status">Alltid tillgänglig · Anonymt · Inte professionell vård</div>
+      </div>
+    </div>
+    <div class="overlay-right">
+      <button class="new-chat-btn" onclick="startNewChat()">Nytt samtal</button>
+      <button class="overlay-close" onclick="closeOverlay()">✕</button>
+    </div>
+  </div>
+  <div class="quick-prompts">
+    <button class="qp" onclick="quickSend('Jag vet inte riktigt hur jag mår')">Jag vet inte hur jag mår</button>
+    <button class="qp" onclick="quickSend('Jag har svårt att sova')">Svårt att sova</button>
+    <button class="qp" onclick="quickSend('Jag känner mig ensam')">Jag känner mig ensam</button>
+    <button class="qp" onclick="quickSend('Jag är stressad och trött')">Stressad och trött</button>
+  </div>
+  <div id="messagesContainer">
+    <div class="welcome-message">
+      <h2>Välkommen</h2>
+      <p>Här kan du reflektera över dina tankar och känslor i din egen takt. Jag lyssnar utan att döma, men försöker inte alltid hålla med dig. Ibland kan andra perspektiv vara värdefulla.</p>
+      <div class="safety-note"><p>Vid akuta kriser, kontakta <strong>Självmordslinjen: 90101</strong> eller <strong>112</strong></p></div>
+    </div>
+  </div>
+  <div class="chat-inputbar">
+    <textarea id="messageInput" placeholder="Skriv något..." maxlength="2000" rows="1"></textarea>
+    <button id="sendBtn" disabled onclick="sendChat()">Skicka</button>
+  </div>
+  <div class="chat-footer">
+    <span class="char-count" id="charCount">0/2000</span>
+    <span class="crisis-note">Vid akut kris: ring 90101 eller 112</span>
+  </div>
+</div>
+
+<!-- CRISIS MODAL -->
+<div class="crisis-modal" id="crisisModal">
+  <div class="crisis-modal-box">
+    <h3>Du behöver inte bära detta ensam</h3>
+    <p>Det verkar som att du går igenom något tungt just nu. Här finns hjälp tillgänglig dygnet runt, anonymt och gratis.</p>
+    <div class="crisis-numbers">
+      <div class="crisis-num"><strong>90101</strong><span>Mind Självmordslinjen — dygnet runt, anonymt</span></div>
+      <div class="crisis-num"><strong>112</strong><span>Vid akut fara för dig själv eller andra</span></div>
+      <div class="crisis-num"><strong>1177</strong><span>Sjukvårdsrådgivning dygnet runt</span></div>
+    </div>
+    <button class="modal-close" onclick="document.getElementById('crisisModal').classList.remove('active')">Stäng</button>
+  </div>
+</div>
+
+<script>
+// HAMBURGER
+function toggleMenu() {
+  const menu = document.getElementById('navMenu');
+  const overlay = document.getElementById('navOverlay');
+  const hamburger = document.getElementById('hamburger');
+  menu.classList.toggle('open');
+  overlay.classList.toggle('open');
+  hamburger.classList.toggle('open');
+  document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+}
+function closeMenu() {
+  document.getElementById('navMenu').classList.remove('open');
+  document.getElementById('navOverlay').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.querySelectorAll('.nav-menu a').forEach(a => a.addEventListener('click', closeMenu));
+
+// DISCLAIMER
+function acceptDisclaimer() {
+  localStorage.setItem('tryggman_chat_disclaimer', 'accepted');
+  document.getElementById('disclaimerPopup').classList.add('hidden');
+}
+if (localStorage.getItem('tryggman_chat_disclaimer') === 'accepted') {
+  document.getElementById('disclaimerPopup').classList.add('hidden');
+}
+
+// CHAT
+let conversationHistory = [];
+let isProcessing = false;
+
+function openOverlay() {
+  document.getElementById('overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  loadHistory();
+}
+function closeOverlay() {
+  document.getElementById('overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+async function sendChat() {
+  if (isProcessing) return;
+  const input = document.getElementById('messageInput');
+  const message = input.value.trim();
+  if (!message) return;
+  input.value = '';
+  document.getElementById('charCount').textContent = '0/2000';
+  input.style.height = 'auto';
+  document.getElementById('sendBtn').disabled = true;
+  const welcomeMsg = document.getElementById('messagesContainer').querySelector('.welcome-message');
+  if (welcomeMsg) welcomeMsg.remove();
+  addMessage('user', message);
+  showTyping();
+  isProcessing = true;
+  try {
+    const response = await fetch('/.netlify/functions/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, history: conversationHistory.slice(-10) })
+    });
+    if (!response.ok) throw new Error('Network error');
+    const data = await response.json();
+    hideTyping();
+    if (data && data.message) {
+      addMessage('ai', data.message, data.crisisDetected);
+      if (data.crisisDetected) document.getElementById('crisisModal').classList.add('active');
+    } else throw new Error('Invalid response');
+  } catch(e) {
+    hideTyping();
+    addMessage('ai', 'Förlåt, något gick fel. Försök igen.');
+  } finally { isProcessing = false; }
+}
+
+function quickSend(txt) {
+  const input = document.getElementById('messageInput');
+  input.value = txt;
+  input.dispatchEvent(new Event('input'));
+  sendChat();
+}
+
+function addMessage(role, content, isCrisis = false) {
+  if (!content) return;
+  conversationHistory.push({ role, content, timestamp: Date.now(), crisis: isCrisis });
+  const container = document.getElementById('messagesContainer');
+  const div = document.createElement('div');
+  div.className = `message ${role}`;
+  if (isCrisis && role === 'ai') div.classList.add('crisis-message');
+  const contentDiv = document.createElement('div');
+  contentDiv.className = 'message-content';
+  contentDiv.textContent = content;
+  const timeDiv = document.createElement('div');
+  timeDiv.className = 'message-time';
+  timeDiv.textContent = new Date().toLocaleTimeString('sv-SE', {hour:'2-digit', minute:'2-digit'});
+  div.appendChild(contentDiv);
+  div.appendChild(timeDiv);
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  saveHistory();
+}
+
+function showTyping() {
+  const t = document.createElement('div');
+  t.id = 'typing';
+  t.className = 'typing-indicator';
+  t.innerHTML = '<span></span><span></span><span></span>';
+  document.getElementById('messagesContainer').appendChild(t);
+  document.getElementById('messagesContainer').scrollTop = 99999;
+}
+function hideTyping() { const t = document.getElementById('typing'); if (t) t.remove(); }
+
+function startNewChat() {
+  if (conversationHistory.length > 0 && !confirm('Starta nytt samtal?')) return;
+  conversationHistory = [];
+  saveHistory();
+  document.getElementById('messagesContainer').innerHTML = `
+    <div class="welcome-message">
+      <h2>Välkommen</h2>
+      <p>Här kan du reflektera över dina tankar och känslor i din egen takt.</p>
+      <div class="safety-note"><p>Vid akuta kriser, kontakta <strong>Självmordslinjen: 90101</strong> eller <strong>112</strong></p></div>
+    </div>`;
+}
+
+function saveHistory() {
+  try { localStorage.setItem('tryggman_ai_chat', JSON.stringify({ history: conversationHistory, timestamp: Date.now() })); } catch(e) {}
+}
+function loadHistory() {
+  try {
+    const data = JSON.parse(localStorage.getItem('tryggman_ai_chat'));
+    if (!data || Date.now() - data.timestamp > 14 * 24 * 60 * 60 * 1000) return;
+    conversationHistory = data.history || [];
+    if (conversationHistory.length > 0) {
+      const container = document.getElementById('messagesContainer');
+      const welcome = container.querySelector('.welcome-message');
+      if (welcome) welcome.remove();
+      conversationHistory.forEach(msg => {
+        const div = document.createElement('div');
+        div.className = `message ${msg.role}`;
+        if (msg.crisis && msg.role === 'ai') div.classList.add('crisis-message');
+        const c = document.createElement('div');
+        c.className = 'message-content';
+        c.textContent = msg.content;
+        div.appendChild(c);
+        container.appendChild(div);
+      });
+      container.scrollTop = container.scrollHeight;
+    }
+  } catch(e) { conversationHistory = []; }
+}
+
+document.getElementById('messageInput').addEventListener('input', (e) => {
+  const len = e.target.value.length;
+  document.getElementById('charCount').textContent = `${len}/2000`;
+  document.getElementById('sendBtn').disabled = len === 0 || len > 2000;
+  e.target.style.height = 'auto';
+  e.target.style.height = Math.min(e.target.scrollHeight, 150) + 'px';
+});
+document.getElementById('messageInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    if (!document.getElementById('sendBtn').disabled) sendChat();
+  }
+});
+</script>
+</body></html>

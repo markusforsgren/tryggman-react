@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<title>Produkter — Tryggman</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:#FAFAF7;color:#1C2B35;line-height:1.6;overflow-x:hidden}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.1rem 6%;background:rgba(28,43,53,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05)}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:#fff;letter-spacing:0.02em;text-decoration:none}
+
+.hamburger{background:none;border:none;cursor:pointer;padding:0.3rem;display:flex;flex-direction:column;gap:5px;z-index:102}
+.hamburger span{display:block;width:24px;height:2px;background:#fff;transition:all 0.3s ease;border-radius:2px}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;transform:translateX(-8px)}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-menu{position:fixed;top:0;right:-100%;width:280px;height:100vh;background:#1C2B35;z-index:101;transition:right 0.35s ease;display:flex;flex-direction:column;padding:5rem 2rem 2rem;box-shadow:-8px 0 32px rgba(0,0,0,0.3)}
+.nav-menu.open{right:0}
+.nav-menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;display:none;backdrop-filter:blur(2px)}
+.nav-menu-overlay.open{display:block}
+.nav-menu ul{list-style:none;display:flex;flex-direction:column;gap:0.2rem;flex:1}
+.nav-menu ul li a{display:block;padding:0.75rem 0.8rem;color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.95rem;font-weight:400;border-radius:2px;transition:all 0.2s}
+.nav-menu ul li a:hover,.nav-menu ul li a.active{color:#fff;background:rgba(255,255,255,0.05)}
+.nav-menu ul li a.active{color:#4E9E8D}
+.nav-menu-cta{background:#3A7D6E!important;color:#fff!important;font-weight:500!important;margin-top:0.5rem}
+.nav-menu-bottom{border-top:1px solid rgba(255,255,255,0.06);padding-top:1.2rem;margin-top:auto}
+.nav-menu-bottom a{display:block;padding:0.5rem 0.8rem;color:rgba(255,255,255,0.3);text-decoration:none;font-size:0.82rem;transition:color 0.2s}
+.nav-menu-bottom a:hover{color:rgba(255,255,255,0.6)}
+.nav-menu-label{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:0 0.8rem;margin-bottom:0.3rem;margin-top:1rem}
+
+.page-hero{padding:7rem 8% 5rem;background:#1C2B35;margin-top:62px;min-height:50vh;display:flex;flex-direction:column;justify-content:center}
+.section-label{font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:#4E9E8D;margin-bottom:0.9rem}
+.page-hero h1{font-family:'DM Serif Display',serif;font-size:3.5rem;line-height:1.1;color:#fff;margin-bottom:1rem}
+.page-hero h1 em{font-style:italic;color:#4E9E8D}
+.page-hero p{font-size:1rem;color:rgba(255,255,255,0.5);max-width:520px;font-weight:300;line-height:1.85}
+
+.p-section{padding:5rem 8%;max-width:1100px;margin:0 auto}
+.p-perks{display:flex;gap:2.5rem;flex-wrap:wrap;margin-bottom:3rem;padding-bottom:2.5rem;border-bottom:1px solid rgba(28,43,53,0.08)}
+.p-perk{display:flex;align-items:center;gap:0.6rem;font-size:0.84rem;color:#6B7A85}
+.p-perk strong{color:#1C2B35}
+.p-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}
+.p-card{background:#fff;border:1px solid rgba(28,43,53,0.08);padding:1.8rem 1.5rem;transition:border-color 0.2s,box-shadow 0.2s;opacity:0;transform:translateY(18px);transition:opacity 0.65s ease,transform 0.65s ease,border-color 0.2s,box-shadow 0.2s}
+.p-card.visible{opacity:1;transform:translateY(0)}
+.p-card:hover{border-color:rgba(28,43,53,0.18);box-shadow:0 4px 20px rgba(28,43,53,0.07)}
+.p-img{width:100%;aspect-ratio:1;margin-bottom:1.2rem;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:1rem;color:rgba(255,255,255,0.2);border-radius:2px}
+.p-name{font-size:0.9rem;font-weight:500;color:#1C2B35;margin-bottom:0.3rem}
+.p-desc{font-size:0.78rem;color:#6B7A85;margin-bottom:0.8rem;font-weight:300}
+.p-price{font-family:'DM Serif Display',serif;font-size:1.5rem;color:#3A7D6E;margin-bottom:0.9rem}
+.p-sizes{display:flex;gap:0.3rem;margin-bottom:1rem;flex-wrap:wrap}
+.sz{font-size:0.68rem;border:1px solid rgba(28,43,53,0.15);padding:0.18rem 0.5rem;color:#6B7A85;cursor:pointer;transition:all 0.15s;background:none;font-family:'DM Sans',sans-serif}
+.sz:hover,.sz.active{border-color:#3A7D6E;color:#3A7D6E}
+.btn-buy{width:100%;background:#1C2B35;color:#fff;border:none;padding:0.75rem;font-family:'DM Sans',sans-serif;font-size:0.85rem;cursor:pointer;transition:background 0.2s;letter-spacing:0.04em;border-radius:2px}
+.btn-buy:hover{background:#3A7D6E}
+
+.p-mission{background:#1C2B35;padding:4rem 8%;text-align:center}
+.p-mission h2{font-family:'DM Serif Display',serif;font-size:2rem;color:#fff;margin-bottom:0.8rem}
+.p-mission p{color:rgba(255,255,255,0.45);font-size:0.95rem;max-width:500px;margin:0 auto;font-weight:300;line-height:1.8}
+
+footer{background:#1C2B35;padding:4.5rem 8% 2rem}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:2rem}
+.footer-brand{font-family:'DM Serif Display',serif;font-size:1.6rem;color:#fff;margin-bottom:0.9rem;display:block;text-decoration:none}
+.footer-tagline{font-size:0.85rem;color:rgba(255,255,255,0.35);line-height:1.75;max-width:260px;font-weight:300}
+.footer-col h4{font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:1.1rem}
+.footer-col ul{list-style:none}
+.footer-col li{margin-bottom:0.5rem}
+.footer-col a{color:rgba(255,255,255,0.35);text-decoration:none;font-size:0.85rem;transition:color 0.2s;font-weight:300}
+.footer-col a:hover{color:#fff}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;color:rgba(255,255,255,0.25);flex-wrap:wrap;gap:0.5rem}
+.footer-crisis{color:#4E9E8D;font-weight:500}
+
+@media(max-width:900px){
+  .p-grid{grid-template-columns:1fr 1fr}
+  .p-section{padding:3rem 5%}
+  .page-hero h1{font-size:2.4rem}
+  .footer-top{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){
+  .p-grid{grid-template-columns:1fr}
+  .footer-top{grid-template-columns:1fr}
+}
+.footer-legal{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.04)}
+.footer-legal a{color:rgba(255,255,255,0.2);text-decoration:none;font-size:0.75rem;transition:color 0.2s}
+.footer-legal a:hover{color:rgba(255,255,255,0.5)}
+</style>
+</head>
+<body>
+
+<div class="nav-menu-overlay" id="navOverlay" onclick="closeMenu()"></div>
+<div class="nav-menu" id="navMenu">
+  <ul>
+    <div class="nav-menu-label">Plattformen</div>
+    <li><a href="index.html">Hem</a></li>
+    <li><a href="chat.html">AI-Chat</a></li>
+    <li><a href="terapeut.html">Terapeut</a></li>
+    <li><a href="halsa.html">Min hälsa</a></li>
+    <li><a href="ovningar.html">Övningar</a></li>
+    <li><a href="artiklar.html">Artiklar</a></li>
+    <li><a href="berattelser.html">Berättelser</a></li>
+    <li><a href="community.html">Community</a></li>
+    <div class="nav-menu-label">Konto</div>
+    <li><a href="priser.html">Priser</a></li>
+    <li><a href="konto.html">Mitt konto</a></li>
+    <li><a href="appen.html" class="nav-menu-cta">Appen</a></li>
+  </ul>
+  <div class="nav-menu-bottom">
+    <a href="om-oss.html">Om oss</a>
+    <a href="resurser.html">Resurser & hjälplinjer</a>
+    <a href="produkter.html" class="active">Produkter</a>
+    <a href="mailto:kontakt@tryggman.se">Kontakt</a>
+  </div>
+</div>
+
+<nav>
+  <a href="index.html" class="nav-logo">Tryggman</a>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Meny">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page-hero">
+  <div class="section-label">Tryggman Merch</div>
+  <h1>Bär<br><em>budskapet</em></h1>
+  <p>Stöd vårt arbete och visa att psykisk hälsa inte är tabu. Alla produkter är framtagna med omsorg — tryckta i Sverige.</p>
+</div>
+
+<section class="p-section">
+  <div class="p-perks">
+    <div class="p-perk">📦 <span><strong>Fri frakt</strong> över 500 kr</span></div>
+    <div class="p-perk">🔄 <span><strong>30 dagars</strong> öppet köp</span></div>
+    <div class="p-perk">🇸🇪 <span><strong>Tryckt i Sverige</strong> med kvalitetstryck</span></div>
+    <div class="p-perk">💙 <span>Stödjer <strong>Tryggmans arbete</strong></span></div>
+  </div>
+  <div class="p-grid">
+    <div class="p-card">
+      <div class="p-img" style="background:linear-gradient(145deg,#2E4050,#1C2B35)">T-shirt</div>
+      <div class="p-name">Tryggman T-shirt</div>
+      <div class="p-desc">Premiumkvalitet med broderad logga. 100% organisk bomull.</div>
+      <div class="p-price">299 kr</div>
+      <div class="p-sizes"><button class="sz">S</button><button class="sz">M</button><button class="sz active">L</button><button class="sz">XL</button><button class="sz">XXL</button></div>
+      <button class="btn-buy">Köp nu</button>
+    </div>
+    <div class="p-card">
+      <div class="p-img" style="background:linear-gradient(145deg,#3A7D6E,#2A6055)">Hoodie</div>
+      <div class="p-name">Tryggman Hoodie</div>
+      <div class="p-desc">Varm och mysig med stort Tryggman-tryck på ryggen.</div>
+      <div class="p-price">499 kr</div>
+      <div class="p-sizes"><button class="sz">S</button><button class="sz">M</button><button class="sz active">L</button><button class="sz">XL</button><button class="sz">XXL</button></div>
+      <button class="btn-buy">Köp nu</button>
+    </div>
+    <div class="p-card">
+      <div class="p-img" style="background:linear-gradient(145deg,#2E4050,#1C2B35)">Ziptröja</div>
+      <div class="p-name">Tryggman Ziptröja</div>
+      <div class="p-desc">Smidig ziptröja i mjukt material. Perfekt för alla tillfällen.</div>
+      <div class="p-price">549 kr</div>
+      <div class="p-sizes"><button class="sz">S</button><button class="sz">M</button><button class="sz active">L</button><button class="sz">XL</button><button class="sz">XXL</button></div>
+      <button class="btn-buy">Köp nu</button>
+    </div>
+    <div class="p-card">
+      <div class="p-img" style="background:linear-gradient(145deg,#C0873A,#9A6A2A)">Keps</div>
+      <div class="p-name">Tryggman Keps</div>
+      <div class="p-desc">Broderad logga. Justerbar storlek. One size fits all.</div>
+      <div class="p-price">249 kr</div>
+      <div class="p-sizes"><button class="sz active">One size</button></div>
+      <button class="btn-buy">Köp nu</button>
+    </div>
+    <div class="p-card">
+      <div class="p-img" style="background:linear-gradient(145deg,#4E9E8D,#3A7D6E)">Mugg</div>
+      <div class="p-name">Tryggman Mugg</div>
+      <div class="p-desc">Keramikmugg 33cl med Tryggman-logga. Perfekt för morgonkaffet.</div>
+      <div class="p-price">149 kr</div>
+      <div class="p-sizes"><button class="sz active">33cl</button></div>
+      <button class="btn-buy">Köp nu</button>
+    </div>
+  </div>
+</section>
+
+<section class="p-mission">
+  <h2>Mer än en produkt</h2>
+  <p>Varje köp stödjer Tryggmans arbete med att bryta tystnaden kring mäns psykiska hälsa. Tack för att du är med på resan.</p>
+</section>
+
+<footer>
+  <div class="footer-top">
+    <div><a href="index.html" class="footer-brand">Tryggman</a><p class="footer-tagline">Där trygghet skapas. Tillsammans bryter vi tystnaden.</p></div>
+    <div class="footer-col"><h4>Plattformen</h4><ul>
+      <li><a href="chat.html">AI-Chat</a></li>
+      <li><a href="terapeut.html">Terapeut</a></li>
+      <li><a href="community.html">Community</a></li>
+      <li><a href="halsa.html">Min hälsa</a></li>
+      <li><a href="ovningar.html">Övningar</a></li>
+      <li><a href="appen.html">Appen</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Innehåll</h4><ul>
+      <li><a href="artiklar.html">Artiklar</a></li>
+      <li><a href="berattelser.html">Berättelser</a></li>
+      <li><a href="resurser.html">Resurser</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Om Tryggman</h4><ul>
+      <li><a href="om-oss.html">Om oss</a></li>
+      <li><a href="priser.html">Priser</a></li>
+      <li><a href="produkter.html">Produkter</a></li>
+      <li><a href="mailto:kontakt@tryggman.se">Kontakt</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom"><div>© 2026 Tryggman</div><div class="footer-crisis">Kris? Ring 90101 eller 112</div></div>
+  <div class="footer-legal"><a href="integritetspolicy.html">Integritetspolicy</a><a href="anvandarvillkor.html">Användarvillkor</a><a href="cookies.html">Cookies</a></div>
+</footer>
+
+<script>
+function toggleMenu() {
+  const menu = document.getElementById('navMenu');
+  const overlay = document.getElementById('navOverlay');
+  const hamburger = document.getElementById('hamburger');
+  menu.classList.toggle('open'); overlay.classList.toggle('open'); hamburger.classList.toggle('open');
+  document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+}
+function closeMenu() {
+  document.getElementById('navMenu').classList.remove('open');
+  document.getElementById('navOverlay').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.querySelectorAll('.nav-menu a').forEach(a => a.addEventListener('click', closeMenu));
+
+const obs = new IntersectionObserver(e => { e.forEach(n => { if (n.isIntersecting) n.target.classList.add('visible') }) }, {threshold:0.08});
+document.querySelectorAll('.p-card').forEach(el => obs.observe(el));
+
+document.querySelectorAll('.sz').forEach(sz => {
+  sz.addEventListener('click', function() {
+    this.closest('.p-sizes').querySelectorAll('.sz').forEach(s => s.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body></html>

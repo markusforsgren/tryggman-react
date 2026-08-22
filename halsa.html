@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<title>Min Hälsa — Tryggman</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:#FAFAF7;color:#1C2B35;line-height:1.6;overflow-x:hidden}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.1rem 6%;background:rgba(28,43,53,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05)}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:#fff;letter-spacing:0.02em;text-decoration:none}
+
+.hamburger{background:none;border:none;cursor:pointer;padding:0.3rem;display:flex;flex-direction:column;gap:5px;z-index:102}
+.hamburger span{display:block;width:24px;height:2px;background:#fff;transition:all 0.3s ease;border-radius:2px}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;transform:translateX(-8px)}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-menu{position:fixed;top:0;right:-100%;width:280px;height:100vh;background:#1C2B35;z-index:101;transition:right 0.35s ease;display:flex;flex-direction:column;padding:5rem 2rem 2rem;box-shadow:-8px 0 32px rgba(0,0,0,0.3)}
+.nav-menu.open{right:0}
+.nav-menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;display:none;backdrop-filter:blur(2px)}
+.nav-menu-overlay.open{display:block}
+.nav-menu ul{list-style:none;display:flex;flex-direction:column;gap:0.2rem;flex:1}
+.nav-menu ul li a{display:block;padding:0.75rem 0.8rem;color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.95rem;font-weight:400;border-radius:2px;transition:all 0.2s}
+.nav-menu ul li a:hover,.nav-menu ul li a.active{color:#fff;background:rgba(255,255,255,0.05)}
+.nav-menu ul li a.active{color:#4E9E8D}
+.nav-menu-cta{background:#3A7D6E!important;color:#fff!important;font-weight:500!important;margin-top:0.5rem}
+.nav-menu-cta:hover{background:#4E9E8D!important}
+.nav-menu-bottom{border-top:1px solid rgba(255,255,255,0.06);padding-top:1.2rem;margin-top:auto}
+.nav-menu-bottom a{display:block;padding:0.5rem 0.8rem;color:rgba(255,255,255,0.3);text-decoration:none;font-size:0.82rem;transition:color 0.2s}
+.nav-menu-bottom a:hover{color:rgba(255,255,255,0.6)}
+.nav-menu-label{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:0 0.8rem;margin-bottom:0.3rem;margin-top:1rem}
+
+.page-hero{padding:7rem 8% 5rem;background:#1C2B35;margin-top:62px;min-height:55vh;display:flex;flex-direction:column;justify-content:center}
+.section-label{font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:#4E9E8D;margin-bottom:0.9rem}
+.page-hero h1{font-family:'DM Serif Display',serif;font-size:3.5rem;line-height:1.1;color:#fff;margin-bottom:1rem}
+.page-hero h1 em{font-style:italic;color:#4E9E8D}
+.page-hero p{font-size:1rem;color:rgba(255,255,255,0.5);max-width:520px;font-weight:300;line-height:1.85;margin-bottom:2.5rem}
+.btn-primary{background:#3A7D6E;color:#fff;padding:0.9rem 2.2rem;border:none;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:500;cursor:pointer;transition:background 0.2s;display:inline-block;letter-spacing:0.02em;text-decoration:none}
+.btn-primary:hover{background:#4E9E8D}
+
+.info-section{padding:5rem 8%;background:#F2EDE5}
+.info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;max-width:1100px;margin:0 auto}
+.info-card{background:#fff;padding:1.8rem;border-top:3px solid #1C2B35}
+.info-icon{font-size:1.5rem;margin-bottom:0.8rem}
+.info-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:#1C2B35;margin-bottom:0.5rem}
+.info-text{font-size:0.82rem;color:#6B7A85;line-height:1.7;font-weight:300}
+.section-title{font-family:'DM Serif Display',serif;font-size:2.4rem;color:#1C2B35;margin-bottom:0.5rem}
+.section-body{font-size:0.95rem;color:#6B7A85;margin-bottom:2.5rem;font-weight:300}
+
+/* OVERLAY */
+.overlay{position:fixed;inset:0;z-index:200;display:none;flex-direction:column;background:#FAFAF7}
+.overlay.active{display:flex}
+.overlay-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;background:#1C2B35;flex-shrink:0}
+.overlay-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:#fff}
+.overlay-status{font-size:0.72rem;color:rgba(255,255,255,0.4);margin-top:0.1rem}
+.overlay-close{background:none;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);width:32px;height:32px;border-radius:2px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.overlay-close:hover{border-color:rgba(255,255,255,0.4);color:#fff}
+
+.tabs{display:flex;background:#fff;border-bottom:1px solid rgba(28,43,53,0.08);flex-shrink:0}
+.tab{padding:1rem 1.5rem;font-size:0.82rem;font-weight:500;color:#6B7A85;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;letter-spacing:0.03em;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif}
+.tab.active{color:#1C2B35;border-bottom-color:#3A7D6E}
+
+.tab-content{display:none;flex:1;flex-direction:column;overflow:hidden}
+.tab-content.active{display:flex}
+
+.checkin-view{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;background:#FAFAF7}
+.checkin-card{background:#fff;padding:2.5rem;max-width:520px;width:100%;border-radius:2px;box-shadow:0 4px 24px rgba(28,43,53,0.06);border:1px solid rgba(28,43,53,0.08)}
+.checkin-date{font-size:0.75rem;color:#6B7A85;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem}
+.checkin-title{font-family:'DM Serif Display',serif;font-size:1.8rem;color:#1C2B35;margin-bottom:0.5rem}
+.checkin-sub{font-size:0.88rem;color:#6B7A85;margin-bottom:2rem}
+.mood-scale{display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.mood-btn{flex:1;min-width:40px;padding:0.7rem 0.3rem;border:1px solid rgba(28,43,53,0.12);background:#FAFAF7;border-radius:2px;cursor:pointer;font-size:0.88rem;font-weight:500;color:#6B7A85;transition:all 0.2s;text-align:center;font-family:'DM Sans',sans-serif}
+.mood-btn:hover{border-color:#3A7D6E;color:#3A7D6E}
+.mood-btn.selected{background:#3A7D6E;border-color:#3A7D6E;color:#fff}
+.mood-labels{display:flex;justify-content:space-between;font-size:0.7rem;color:#6B7A85;margin-bottom:2rem}
+.checkin-note-label{font-size:0.82rem;font-weight:500;color:#1C2B35;margin-bottom:0.5rem}
+.checkin-note{width:100%;padding:0.82rem 1rem;border:1px solid rgba(28,43,53,0.12);font-family:'DM Sans',sans-serif;font-size:0.88rem;color:#1C2B35;border-radius:2px;outline:none;resize:none;min-height:80px;background:#FAFAF7;margin-bottom:1.2rem}
+.checkin-note:focus{border-color:#3A7D6E}
+.checkin-note::placeholder{color:#6B7A85}
+.checkin-btn{width:100%;background:#3A7D6E;color:#fff;padding:0.85rem;border:none;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;transition:background 0.2s}
+.checkin-btn:hover{background:#4E9E8D}
+.checkin-btn:disabled{opacity:0.5;cursor:not-allowed}
+
+.graph-view{flex:1;padding:2rem;background:#FAFAF7;overflow-y:auto}
+.graph-inner{max-width:700px;margin:0 auto}
+.graph-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.graph-title{font-family:'DM Serif Display',serif;font-size:1.5rem;color:#1C2B35}
+.graph-period{display:flex;gap:0.5rem}
+.period-btn{padding:0.3rem 0.8rem;border:1px solid rgba(28,43,53,0.12);background:#fff;border-radius:2px;font-size:0.75rem;cursor:pointer;color:#6B7A85;transition:all 0.2s;font-family:'DM Sans',sans-serif}
+.period-btn.active{background:#1C2B35;border-color:#1C2B35;color:#fff}
+.graph-container{background:#fff;padding:1.5rem;border-radius:2px;border:1px solid rgba(28,43,53,0.08);margin-bottom:1.5rem}
+.graph-empty{text-align:center;padding:3rem;color:#6B7A85;font-size:0.88rem}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+.stat-box{background:#fff;padding:1.2rem;border-radius:2px;border:1px solid rgba(28,43,53,0.08);text-align:center}
+.stat-box-num{font-family:'DM Serif Display',serif;font-size:2rem;color:#1C2B35}
+.stat-box-label{font-size:0.72rem;color:#6B7A85;text-transform:uppercase;letter-spacing:0.08em;margin-top:0.2rem}
+
+.ai-analysis{background:#1C2B35;padding:1.5rem;border-radius:2px;margin-bottom:1.5rem}
+.ai-analysis-header{display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem}
+.ai-dot{width:8px;height:8px;border-radius:50%;background:#3A7D6E;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.ai-analysis-title{font-size:0.82rem;color:#4E9E8D;font-weight:500;text-transform:uppercase;letter-spacing:0.1em}
+.ai-analysis-text{font-size:0.88rem;color:rgba(255,255,255,0.75);line-height:1.75}
+.ai-refresh-btn{background:none;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);padding:0.4rem 0.8rem;font-size:0.75rem;font-family:'DM Sans',sans-serif;cursor:pointer;border-radius:2px;margin-top:1rem;transition:all 0.2s}
+.ai-refresh-btn:hover{border-color:#4E9E8D;color:#4E9E8D}
+
+.log-list{display:flex;flex-direction:column;gap:0.6rem}
+.log-item{background:#fff;padding:1rem 1.2rem;border-radius:2px;border:1px solid rgba(28,43,53,0.08);display:flex;align-items:center;gap:1rem}
+.log-date{font-size:0.75rem;color:#6B7A85;min-width:80px}
+.log-mood-num{font-family:'DM Serif Display',serif;font-size:1.4rem;color:#1C2B35;min-width:30px}
+.log-bar{flex:1;height:6px;background:#F2EDE5;border-radius:3px;overflow:hidden}
+.log-bar-fill{height:100%;border-radius:3px;transition:width 0.5s ease}
+.log-note{font-size:0.78rem;color:#6B7A85;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+footer{background:#1C2B35;padding:4.5rem 8% 2rem}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:2rem}
+.footer-brand{font-family:'DM Serif Display',serif;font-size:1.6rem;color:#fff;margin-bottom:0.9rem;display:block;text-decoration:none}
+.footer-tagline{font-size:0.85rem;color:rgba(255,255,255,0.35);line-height:1.75;max-width:260px;font-weight:300}
+.footer-col h4{font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:1.1rem}
+.footer-col ul{list-style:none}
+.footer-col li{margin-bottom:0.5rem}
+.footer-col a{color:rgba(255,255,255,0.35);text-decoration:none;font-size:0.85rem;transition:color 0.2s;font-weight:300}
+.footer-col a:hover{color:#fff}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;color:rgba(255,255,255,0.25);flex-wrap:wrap;gap:0.5rem}
+.footer-crisis{color:#4E9E8D;font-weight:500}
+
+@media(max-width:800px){
+  .info-grid{grid-template-columns:1fr 1fr}
+  .page-hero h1{font-size:2.4rem}
+  .footer-top{grid-template-columns:1fr 1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+}
+@media(max-width:500px){
+  .info-grid{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr}
+}
+.footer-legal{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.04)}
+.footer-legal a{color:rgba(255,255,255,0.2);text-decoration:none;font-size:0.75rem;transition:color 0.2s}
+.footer-legal a:hover{color:rgba(255,255,255,0.5)}
+</style>
+</head>
+<body>
+
+<div class="nav-menu-overlay" id="navOverlay" onclick="closeMenu()"></div>
+<div class="nav-menu" id="navMenu">
+  <ul>
+    <div class="nav-menu-label">Plattformen</div>
+    <li><a href="index.html">Hem</a></li>
+    <li><a href="chat.html">AI-Chat</a></li>
+    <li><a href="terapeut.html">Terapeut</a></li>
+    <li><a href="halsa.html" class="active">Min hälsa</a></li>
+    <li><a href="ovningar.html">Övningar</a></li>
+    <li><a href="artiklar.html">Artiklar</a></li>
+    <li><a href="berattelser.html">Berättelser</a></li>
+    <li><a href="community.html">Community</a></li>
+    <div class="nav-menu-label">Konto</div>
+    <li><a href="priser.html">Priser</a></li>
+    <li><a href="konto.html">Mitt konto</a></li>
+    <li><a href="appen.html" class="nav-menu-cta">Appen</a></li>
+  </ul>
+  <div class="nav-menu-bottom">
+    <a href="om-oss.html">Om oss</a>
+    <a href="resurser.html">Resurser & hjälplinjer</a>
+    <a href="produkter.html">Produkter</a>
+    <a href="mailto:kontakt@tryggman.se">Kontakt</a>
+  </div>
+</div>
+
+<nav>
+  <a href="index.html" class="nav-logo">Tryggman</a>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Meny">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page-hero">
+  <div class="section-label">Mental Fitness</div>
+  <h1>Din dagliga<br><em>incheckning</em></h1>
+  <p>Följ ditt mående över tid. Identifiera mönster. Låt AI:n hjälpa dig förstå vad som påverkar hur du mår — och vad du kan göra åt det.</p>
+  <button class="btn-primary" onclick="openOverlay()">Öppna Min Hälsa</button>
+</div>
+
+<section class="info-section">
+  <div style="max-width:1100px;margin:0 auto">
+    <div class="section-label">Vad du får</div>
+    <h2 class="section-title">Mental fitness på riktigt</h2>
+    <p class="section-body">Inte terapi. Inte appar som ger dig poäng. Bara ett enkelt verktyg för att hålla koll på dig själv.</p>
+    <div class="info-grid">
+      <div class="info-card"><div class="info-icon">📊</div><div class="info-title">Daglig logg</div><div class="info-text">Checka in på 30 sekunder. Skala 1–10 och en valfri notering.</div></div>
+      <div class="info-card"><div class="info-icon">📈</div><div class="info-title">Graf över tid</div><div class="info-text">Se hur ditt mående rör sig över dagar, veckor och månader.</div></div>
+      <div class="info-card"><div class="info-icon">🤖</div><div class="info-title">AI-analys</div><div class="info-text">AI:n identifierar mönster och ger konkreta tips baserade på din data.</div></div>
+      <div class="info-card"><div class="info-icon">🔒</div><div class="info-title">Privat</div><div class="info-text">All data sparas lokalt i din webbläsare. Ingen ser din data.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-top">
+    <div><a href="index.html" class="footer-brand">Tryggman</a><p class="footer-tagline">Där trygghet skapas. Tillsammans bryter vi tystnaden.</p></div>
+    <div class="footer-col"><h4>Plattformen</h4><ul>
+      <li><a href="chat.html">AI-Chat</a></li>
+      <li><a href="terapeut.html">Terapeut</a></li>
+      <li><a href="community.html">Community</a></li>
+      <li><a href="halsa.html">Min hälsa</a></li>
+      <li><a href="ovningar.html">Övningar</a></li>
+      <li><a href="appen.html">Appen</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Innehåll</h4><ul>
+      <li><a href="artiklar.html">Artiklar</a></li>
+      <li><a href="berattelser.html">Berättelser</a></li>
+      <li><a href="resurser.html">Resurser</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Om Tryggman</h4><ul>
+      <li><a href="om-oss.html">Om oss</a></li>
+      <li><a href="priser.html">Priser</a></li>
+      <li><a href="produkter.html">Produkter</a></li>
+      <li><a href="mailto:kontakt@tryggman.se">Kontakt</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom"><div>© 2026 Tryggman</div><div class="footer-crisis">Kris? Ring 90101 eller 112</div></div>
+  <div class="footer-legal"><a href="integritetspolicy.html">Integritetspolicy</a><a href="anvandarvillkor.html">Användarvillkor</a><a href="cookies.html">Cookies</a></div>
+</footer>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay">
+  <div class="overlay-header">
+    <div>
+      <div class="overlay-title">Min Hälsa</div>
+      <div class="overlay-status">Mental Fitness · Daglig incheckning</div>
+    </div>
+    <button class="overlay-close" onclick="closeOverlay()">✕</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('checkin', this)">Checka in idag</button>
+    <button class="tab" onclick="switchTab('graph', this)">Graf & analys</button>
+    <button class="tab" onclick="switchTab('log', this)">Logg</button>
+  </div>
+
+  <div class="tab-content active" id="tab-checkin">
+    <div class="checkin-view">
+      <div class="checkin-card">
+        <div class="checkin-date" id="checkinDate"></div>
+        <h2 class="checkin-title">Hur mår du idag?</h2>
+        <p class="checkin-sub">Välj en siffra från 1 (mycket dåligt) till 10 (utmärkt).</p>
+        <div class="mood-scale" id="moodScale"></div>
+        <div class="mood-labels"><span>Mycket dåligt</span><span>Utmärkt</span></div>
+        <div class="checkin-note-label">Något på hjärtat? (valfritt)</div>
+        <textarea class="checkin-note" id="checkinNote" placeholder="Vad påverkar ditt mående idag?"></textarea>
+        <button class="checkin-btn" id="checkinBtn" onclick="saveCheckin()">Spara dagens incheckning</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-graph">
+    <div class="graph-view">
+      <div class="graph-inner">
+        <div class="graph-header">
+          <div class="graph-title">Ditt mående</div>
+          <div class="graph-period">
+            <button class="period-btn active" onclick="setPeriod(7, this)">7 dagar</button>
+            <button class="period-btn" onclick="setPeriod(30, this)">30 dagar</button>
+            <button class="period-btn" onclick="setPeriod(90, this)">90 dagar</button>
+          </div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-box-num" id="statAvg">–</div><div class="stat-box-label">Snitt</div></div>
+          <div class="stat-box"><div class="stat-box-num" id="statStreak">–</div><div class="stat-box-label">Dagar i rad</div></div>
+          <div class="stat-box"><div class="stat-box-num" id="statTotal">–</div><div class="stat-box-label">Totalt</div></div>
+        </div>
+        <div class="graph-container">
+          <canvas id="moodChart" height="200"></canvas>
+          <div class="graph-empty" id="graphEmpty" style="display:none">Checka in minst 3 dagar för att se grafen.</div>
+        </div>
+        <div class="ai-analysis" id="aiAnalysis">
+          <div class="ai-analysis-header">
+            <div class="ai-dot"></div>
+            <div class="ai-analysis-title">AI-analys</div>
+          </div>
+          <div class="ai-analysis-text" id="aiText">Samlar data... Checka in varje dag för en djupare analys.</div>
+          <button class="ai-refresh-btn" onclick="runAiAnalysis()">Uppdatera analys</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-log">
+    <div class="graph-view">
+      <div class="graph-inner">
+        <h2 class="graph-title" style="margin-bottom:1.5rem">Alla incheckningar</h2>
+        <div class="log-list" id="logList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleMenu() {
+  const menu = document.getElementById('navMenu');
+  const overlay = document.getElementById('navOverlay');
+  const hamburger = document.getElementById('hamburger');
+  menu.classList.toggle('open');
+  overlay.classList.toggle('open');
+  hamburger.classList.toggle('open');
+  document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+}
+function closeMenu() {
+  document.getElementById('navMenu').classList.remove('open');
+  document.getElementById('navOverlay').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.querySelectorAll('.nav-menu a').forEach(a => a.addEventListener('click', closeMenu));
+
+function getLog() { try { return JSON.parse(localStorage.getItem('tryggman_health_log') || '[]'); } catch(e) { return []; } }
+function saveLog(log) { localStorage.setItem('tryggman_health_log', JSON.stringify(log)); }
+function todayKey() { return new Date().toISOString().split('T')[0]; }
+
+function openOverlay() {
+  document.getElementById('overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  initCheckin();
+  renderGraph(7);
+  renderLog();
+  updateStats(7);
+  runAiAnalysis();
+}
+function closeOverlay() {
+  document.getElementById('overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'graph') { renderGraph(currentPeriod); updateStats(currentPeriod); }
+  if (name === 'log') renderLog();
+}
+
+function initCheckin() {
+  const today = todayKey();
+  const log = getLog();
+  const existing = log.find(e => e.date === today);
+  document.getElementById('checkinDate').textContent = new Date().toLocaleDateString('sv-SE', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+  const scale = document.getElementById('moodScale');
+  scale.innerHTML = '';
+  for (let i = 1; i <= 10; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'mood-btn' + (existing && existing.mood === i ? ' selected' : '');
+    btn.textContent = i;
+    btn.onclick = () => { document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); };
+    scale.appendChild(btn);
+  }
+  if (existing) {
+    document.getElementById('checkinNote').value = existing.note || '';
+    document.getElementById('checkinBtn').textContent = 'Uppdatera incheckning';
+  } else {
+    document.getElementById('checkinNote').value = '';
+    document.getElementById('checkinBtn').textContent = 'Spara dagens incheckning';
+  }
+}
+
+function saveCheckin() {
+  const selected = document.querySelector('.mood-btn.selected');
+  if (!selected) { alert('Välj ett värde 1–10.'); return; }
+  const mood = parseInt(selected.textContent);
+  const note = document.getElementById('checkinNote').value.trim();
+  const today = todayKey();
+  const log = getLog().filter(e => e.date !== today);
+  log.push({ date: today, mood, note, timestamp: Date.now() });
+  log.sort((a,b) => a.date.localeCompare(b.date));
+  saveLog(log);
+  const btn = document.getElementById('checkinBtn');
+  btn.textContent = '✓ Sparat!';
+  btn.disabled = true;
+  setTimeout(() => { btn.textContent = 'Uppdatera incheckning'; btn.disabled = false; }, 2000);
+  renderGraph(currentPeriod);
+  updateStats(currentPeriod);
+  runAiAnalysis();
+}
+
+let currentPeriod = 7;
+
+function setPeriod(days, btn) {
+  currentPeriod = days;
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGraph(days);
+  updateStats(days);
+}
+
+function renderGraph(days) {
+  const log = getLog();
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days + 1);
+  const filtered = log.filter(e => new Date(e.date) >= cutoff);
+  const canvas = document.getElementById('moodChart');
+  const emptyEl = document.getElementById('graphEmpty');
+  if (filtered.length < 2) { canvas.style.display = 'none'; emptyEl.style.display = 'block'; return; }
+  canvas.style.display = 'block'; emptyEl.style.display = 'none';
+  const labels = filtered.map(e => { const d = new Date(e.date); return d.toLocaleDateString('sv-SE', {day:'numeric', month:'short'}); });
+  const data = filtered.map(e => e.mood);
+  const W = canvas.offsetWidth || 600;
+  const H = 200;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+  const pad = {top:20, right:20, bottom:40, left:40};
+  const gW = W - pad.left - pad.right;
+  const gH = H - pad.top - pad.bottom;
+  ctx.strokeStyle = 'rgba(28,43,53,0.06)'; ctx.lineWidth = 1;
+  for (let i = 0; i <= 10; i += 2) {
+    const y = pad.top + gH - (i / 10) * gH;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + gW, y); ctx.stroke();
+    ctx.fillStyle = '#6B7A85'; ctx.font = '10px DM Sans, sans-serif';
+    ctx.fillText(i, pad.left - 20, y + 4);
+  }
+  const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + gH);
+  grad.addColorStop(0, 'rgba(58,125,110,0.2)'); grad.addColorStop(1, 'rgba(58,125,110,0)');
+  const xStep = gW / (data.length - 1);
+  const points = data.map((v, i) => ({ x: pad.left + i * xStep, y: pad.top + gH - (v / 10) * gH }));
+  ctx.beginPath(); ctx.moveTo(points[0].x, pad.top + gH);
+  points.forEach(p => ctx.lineTo(p.x, p.y));
+  ctx.lineTo(points[points.length-1].x, pad.top + gH); ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
+  ctx.beginPath(); ctx.strokeStyle = '#3A7D6E'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+  points.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)); ctx.stroke();
+  points.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fillStyle = '#3A7D6E'; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke(); });
+  ctx.fillStyle = '#6B7A85'; ctx.font = '10px DM Sans, sans-serif'; ctx.textAlign = 'center';
+  const step = Math.max(1, Math.floor(labels.length / 7));
+  labels.forEach((l, i) => { if (i % step === 0 || i === labels.length - 1) ctx.fillText(l, points[i].x, H - 10); });
+}
+
+function updateStats(days) {
+  const log = getLog();
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - days + 1);
+  const filtered = log.filter(e => new Date(e.date) >= cutoff);
+  const avg = filtered.length ? (filtered.reduce((s,e) => s + e.mood, 0) / filtered.length).toFixed(1) : '–';
+  document.getElementById('statAvg').textContent = avg;
+  document.getElementById('statTotal').textContent = log.length;
+  let streak = 0;
+  const today = new Date();
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today); d.setDate(d.getDate() - i);
+    const key = d.toISOString().split('T')[0];
+    if (log.find(e => e.date === key)) streak++; else break;
+  }
+  document.getElementById('statStreak').textContent = streak;
+}
+
+async function runAiAnalysis() {
+  const log = getLog();
+  if (log.length < 3) { document.getElementById('aiText').textContent = 'Checka in minst 3 dagar för att få en AI-analys.'; return; }
+  document.getElementById('aiText').textContent = 'Analyserar ditt mående...';
+  const recent = log.slice(-30);
+  const dataStr = recent.map(e => `${e.date}: ${e.mood}/10${e.note ? ' (notering: ' + e.note + ')' : ''}`).join('\n');
+  try {
+    const response = await fetch('/.netlify/functions/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `Analysera denna måendelogg och ge 2-3 konkreta observationer och tips på svenska. Var direkt och specifik. Max 4 meningar totalt. Data:\n${dataStr}`, history: [] })
+    });
+    const data = await response.json();
+    if (data && data.message) document.getElementById('aiText').textContent = data.message;
+  } catch(e) { document.getElementById('aiText').textContent = 'Kunde inte hämta analys just nu. Försök igen.'; }
+}
+
+function renderLog() {
+  const log = getLog().slice().reverse();
+  const list = document.getElementById('logList');
+  if (log.length === 0) { list.innerHTML = '<div style="text-align:center;padding:2rem;color:#6B7A85;font-size:0.88rem">Inga incheckningar än. Börja idag!</div>'; return; }
+  list.innerHTML = log.map(e => `
+    <div class="log-item">
+      <div class="log-date">${new Date(e.date).toLocaleDateString('sv-SE', {day:'numeric', month:'short'})}</div>
+      <div class="log-mood-num">${e.mood}</div>
+      <div class="log-bar"><div class="log-bar-fill" style="width:${e.mood * 10}%;background:${e.mood >= 7 ? '#3A7D6E' : e.mood >= 4 ? '#C0873A' : '#c0392b'}"></div></div>
+      <div class="log-note">${e.note || '–'}</div>
+    </div>`).join('');
+}
+</script>
+</body></html>

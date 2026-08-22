@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<title>Logga in — Tryggman</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#1C2B35;min-height:100vh;display:flex;flex-direction:column}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.1rem 6%;background:rgba(28,43,53,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05)}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:#fff;letter-spacing:0.02em;text-decoration:none}
+.nav-back{font-size:0.82rem;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s}
+.nav-back:hover{color:#fff}
+
+.login-page{flex:1;display:flex;align-items:center;justify-content:center;padding:6rem 2rem 2rem}
+.login-wrap{display:grid;grid-template-columns:1fr 1fr;max-width:900px;width:100%;min-height:560px;box-shadow:0 24px 64px rgba(0,0,0,0.3)}
+
+.login-left{background:#2E4050;padding:3rem;display:flex;flex-direction:column;justify-content:space-between}
+.login-logo{font-family:'DM Serif Display',serif;font-size:1.8rem;color:#fff;text-decoration:none;display:block;margin-bottom:3rem}
+.login-tagline{font-family:'DM Serif Display',serif;font-size:2rem;color:#fff;line-height:1.2;margin-bottom:1rem}
+.login-tagline em{font-style:italic;color:#4E9E8D}
+.login-sub{font-size:0.88rem;color:rgba(255,255,255,0.45);line-height:1.75;font-weight:300}
+.login-features{margin-top:2rem;display:flex;flex-direction:column;gap:0.8rem}
+.login-feature{font-size:0.82rem;color:rgba(255,255,255,0.4);display:flex;align-items:center;gap:0.6rem}
+.login-feature::before{content:'✓';color:#4E9E8D;font-weight:600}
+.login-crisis{font-size:0.72rem;color:rgba(255,255,255,0.2);margin-top:2rem;line-height:1.6}
+.login-crisis a{color:#4E9E8D;text-decoration:none}
+
+.login-right{background:#fff;padding:3rem;display:flex;flex-direction:column;justify-content:center}
+.auth-tabs{display:flex;gap:0;margin-bottom:2rem;border-bottom:1px solid rgba(28,43,53,0.1)}
+.auth-tab{padding:0.6rem 1.2rem;font-size:0.88rem;color:#6B7A85;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif}
+.auth-tab.active{color:#1C2B35;border-bottom-color:#3A7D6E;font-weight:500}
+
+.auth-error{font-size:0.78rem;color:#c0392b;background:rgba(192,57,43,0.06);border-left:3px solid #c0392b;padding:0.7rem 1rem;margin-bottom:1rem;display:none;border-radius:2px}
+
+.field-label{font-size:0.78rem;font-weight:500;color:#1C2B35;margin-bottom:0.4rem;display:block}
+.auth-field{width:100%;padding:0.82rem 1rem;border:1px solid rgba(28,43,53,0.15);font-family:'DM Sans',sans-serif;font-size:0.88rem;color:#1C2B35;border-radius:2px;outline:none;margin-bottom:1rem;background:#FAFAF7;transition:border-color 0.2s}
+.auth-field:focus{border-color:#3A7D6E;background:#fff}
+.auth-field::placeholder{color:#6B7A85}
+
+.anon-row{display:flex;align-items:flex-start;gap:0.6rem;margin-bottom:1.2rem;padding:0.8rem;background:#F2EDE5;border-radius:2px}
+.anon-row input{accent-color:#3A7D6E;margin-top:3px;flex-shrink:0}
+.anon-row label{font-size:0.78rem;color:#6B7A85;line-height:1.5;cursor:pointer}
+
+.auth-btn{width:100%;background:#3A7D6E;border:none;color:#fff;padding:0.9rem;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;transition:background 0.2s;margin-bottom:1rem}
+.auth-btn:hover{background:#4E9E8D}
+.auth-btn:disabled{opacity:0.5;cursor:not-allowed}
+
+.auth-note{font-size:0.72rem;color:#6B7A85;text-align:center;line-height:1.6}
+.auth-note a{color:#3A7D6E;text-decoration:none;cursor:pointer}
+
+@media(max-width:700px){
+  .login-wrap{grid-template-columns:1fr}
+  .login-left{display:none}
+  .login-right{padding:2rem}
+}
+.footer-legal{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.04)}
+.footer-legal a{color:rgba(255,255,255,0.2);text-decoration:none;font-size:0.75rem;transition:color 0.2s}
+.footer-legal a:hover{color:rgba(255,255,255,0.5)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Tryggman</a>
+  <a href="index.html" class="nav-back">← Tillbaka till startsidan</a>
+</nav>
+
+<div class="login-page">
+  <div class="login-wrap">
+    <div class="login-left">
+      <div>
+        <a href="index.html" class="login-logo">Tryggman</a>
+        <div class="login-tagline">Där<br><em>trygghet</em><br>skapas</div>
+        <p class="login-sub">En plattform för mäns psykiska hälsa. Här kan du vara dig själv — utan press, utan dom.</p>
+        <div class="login-features">
+          <div class="login-feature">AI-rådgivare dygnet runt</div>
+          <div class="login-feature">Certifierad terapeut inom 24h</div>
+          <div class="login-feature">Community med andra män</div>
+          <div class="login-feature">Daglig hälsologg & övningar</div>
+          <div class="login-feature">100% anonymt om du vill</div>
+        </div>
+      </div>
+      <div class="login-crisis">Akut kris? Ring <a href="tel:90101">90101</a> (Mind, dygnet runt) eller <a href="tel:112">112</a></div>
+    </div>
+
+    <div class="login-right">
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('login')">Logga in</button>
+        <button class="auth-tab" onclick="switchTab('register')">Skapa konto</button>
+      </div>
+
+      <div class="auth-error" id="authError"></div>
+
+      <!-- LOGIN -->
+      <div id="loginForm">
+        <label class="field-label">E-post</label>
+        <input class="auth-field" type="email" id="loginEmail" placeholder="din@email.se">
+        <label class="field-label">Lösenord</label>
+        <input class="auth-field" type="password" id="loginPassword" placeholder="••••••••">
+        <button class="auth-btn" id="loginBtn" onclick="doLogin()">Logga in</button>
+        <div class="auth-note">Inget konto? <a onclick="switchTab('register')">Skapa ett gratis konto</a></div>
+      </div>
+
+      <!-- REGISTER -->
+      <div id="registerForm" style="display:none">
+        <label class="field-label">Ditt namn eller alias</label>
+        <input class="auth-field" type="text" id="regName" placeholder="Marcus eller 'Man från Dalarna'">
+        <label class="field-label">E-post</label>
+        <input class="auth-field" type="email" id="regEmail" placeholder="din@email.se">
+        <label class="field-label">Lösenord</label>
+        <input class="auth-field" type="password" id="regPassword" placeholder="Minst 6 tecken">
+        <div class="anon-row">
+          <input type="checkbox" id="regAnon">
+          <label for="regAnon">Visa mig som anonym i community. Ditt namn visas inte för andra användare.</label>
+        </div>
+        <button class="auth-btn" id="registerBtn" onclick="doRegister()">Skapa konto</button>
+        <div class="auth-note">Har du redan konto? <a onclick="switchTab('login')">Logga in</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC-hMsjidzd--a4buvtAapLWpXmbj2yaH4",
+  authDomain: "tryggman-b89fa.firebaseapp.com",
+  projectId: "tryggman-b89fa",
+  storageBucket: "tryggman-b89fa.firebasestorage.app",
+  messagingSenderId: "871100564839",
+  appId: "1:871100564839:web:0515b9d9d706706c335bc2"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// Om redan inloggad – skicka vidare
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    const redirect = new URLSearchParams(window.location.search).get('redirect') || 'index.html';
+    window.location.href = redirect;
+  }
+});
+
+window.switchTab = function(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', ['login','register'][i] === tab));
+  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('authError').style.display = 'none';
+};
+
+window.doLogin = async function() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const err = document.getElementById('authError');
+  const btn = document.getElementById('loginBtn');
+  err.style.display = 'none';
+  if (!email || !password) { err.textContent = 'Fyll i e-post och lösenord.'; err.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Loggar in...';
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch(e) {
+    err.textContent = 'Fel e-post eller lösenord.';
+    err.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Logga in';
+  }
+};
+
+window.doRegister = async function() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+  const anon = document.getElementById('regAnon').checked;
+  const err = document.getElementById('authError');
+  const btn = document.getElementById('registerBtn');
+  err.style.display = 'none';
+  if (!name || !email || !password) { err.textContent = 'Fyll i alla fält.'; err.style.display = 'block'; return; }
+  if (password.length < 6) { err.textContent = 'Lösenordet måste vara minst 6 tecken.'; err.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Skapar konto...';
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(cred.user, { displayName: anon ? 'Anonym' : name });
+  } catch(e) {
+    err.textContent = e.code === 'auth/email-already-in-use' ? 'E-postadressen används redan.' : 'Något gick fel. Försök igen.';
+    err.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Skapa konto';
+  }
+};
+
+document.getElementById('loginPassword').addEventListener('keydown', e => {
+  if (e.key === 'Enter') window.doLogin();
+});
+</script>
+</body></html>

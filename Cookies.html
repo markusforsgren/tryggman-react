@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<title>Cookies — Tryggman</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#FAFAF7;color:#1C2B35;line-height:1.6;overflow-x:hidden}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.1rem 6%;background:rgba(28,43,53,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05)}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:#fff;text-decoration:none}
+.nav-back{font-size:0.82rem;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s}
+.nav-back:hover{color:#fff}
+.page-hero{padding:7rem 8% 4rem;background:#1C2B35;margin-top:62px}
+.section-label{font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:#4E9E8D;margin-bottom:0.9rem}
+.page-hero h1{font-family:'DM Serif Display',serif;font-size:3rem;color:#fff;margin-bottom:0.5rem}
+.page-hero p{font-size:0.88rem;color:rgba(255,255,255,0.4);font-weight:300}
+.doc-body{max-width:740px;margin:0 auto;padding:4rem 8%}
+h2{font-family:'DM Serif Display',serif;font-size:1.5rem;color:#1C2B35;margin:2.5rem 0 0.8rem}
+p{font-size:0.92rem;color:#6B7A85;line-height:1.85;margin-bottom:1rem;font-weight:300}
+ul{margin:0.5rem 0 1rem 1.2rem}
+li{font-size:0.92rem;color:#6B7A85;line-height:1.8;font-weight:300}
+table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:0.85rem}
+th{background:#1C2B35;color:#fff;padding:0.8rem 1rem;text-align:left;font-weight:500;font-size:0.78rem;letter-spacing:0.05em}
+td{padding:0.8rem 1rem;border-bottom:1px solid rgba(28,43,53,0.08);color:#6B7A85;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:nth-child(even) td{background:rgba(28,43,53,0.02)}
+.highlight{background:#F2EDE5;border-left:3px solid #3A7D6E;padding:1rem 1.2rem;font-size:0.88rem;color:#1C2B35;margin:1.5rem 0;line-height:1.7}
+footer{background:#1C2B35;padding:3rem 8% 2rem;margin-top:4rem}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;color:rgba(255,255,255,0.25);flex-wrap:wrap;gap:0.5rem}
+.footer-legal{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1rem}
+.footer-legal a{color:rgba(255,255,255,0.2);text-decoration:none;font-size:0.75rem;transition:color 0.2s}
+.footer-legal a:hover{color:rgba(255,255,255,0.5)}
+.footer-crisis{color:#4E9E8D;font-weight:500}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">Tryggman</a>
+  <a href="index.html" class="nav-back">← Tillbaka</a>
+</nav>
+<div class="page-hero">
+  <div class="section-label">Juridisk information</div>
+  <h1>Cookies</h1>
+  <p>Senast uppdaterad: Juli 2026</p>
+</div>
+<div class="doc-body">
+  <div class="highlight">Vi använder minimalt med cookies — bara det som krävs för att tjänsten ska fungera. Inga spårnings- eller reklamcookies.</div>
+
+  <h2>Vad är cookies?</h2>
+  <p>Cookies är små textfiler som lagras i din webbläsare. De hjälper webbplatser att komma ihåg information om ditt besök. Vi använder också localStorage (lokal lagring) för att spara data direkt i din webbläsare utan att skicka det till våra servrar.</p>
+
+  <h2>Vilka cookies använder vi?</h2>
+  <table>
+    <tr><th>Namn</th><th>Typ</th><th>Syfte</th><th>Varaktighet</th></tr>
+    <tr><td>Firebase Auth Token</td><td>Nödvändig</td><td>Håller dig inloggad</td><td>Session / 30 dagar</td></tr>
+    <tr><td>tryggman_chat_disclaimer</td><td>Funktionell</td><td>Kommer ihåg att du läst disclaimern i AI-chatten</td><td>Tills du rensar webbläsaren</td></tr>
+    <tr><td>tryggman_terapeut_disclaimer</td><td>Funktionell</td><td>Kommer ihåg att du läst disclaimern på terapeut-sidan</td><td>Tills du rensar webbläsaren</td></tr>
+    <tr><td>tryggman_health_log</td><td>Funktionell</td><td>Sparar din måendelogg lokalt i webbläsaren</td><td>Permanent (tills du rensar)</td></tr>
+    <tr><td>tryggman_ai_chat</td><td>Funktionell</td><td>Sparar AI-chatthistorik lokalt (14–30 dagar)</td><td>14–30 dagar</td></tr>
+    <tr><td>tryggman_msg_count_*</td><td>Funktionell</td><td>Räknar antal meddelanden till terapeuten per månad</td><td>Per månad</td></tr>
+    <tr><td>tryggman_conv_id</td><td>Funktionell</td><td>Kopplar dig till din terapeut-konversation</td><td>Permanent (tills du rensar)</td></tr>
+  </table>
+
+  <h2>Tredjepartscookies</h2>
+  <p>Vi använder inga spårnings- eller reklamcookies. Våra tredjepartsleverantörer kan sätta egna cookies:</p>
+  <ul>
+    <li><strong>Firebase / Google</strong> — för autentisering och databas</li>
+    <li><strong>Stripe</strong> — för betalningshantering (endast på priser-sidan och vid checkout)</li>
+    <li><strong>Google Fonts</strong> — för typsnitt (ingen spårning)</li>
+  </ul>
+
+  <h2>Din kontroll</h2>
+  <p>Du kan rensa cookies och localStorage i din webbläsares inställningar. Notera att detta loggar ut dig och rensar din lokalt sparade data (måendelogg, chatthistorik).</p>
+  <p>De flesta webbläsare låter dig blockera cookies. Nödvändiga cookies krävs för att tjänsten ska fungera.</p>
+
+  <h2>Kontakt</h2>
+  <p>Frågor om vår cookie-användning? Kontakta oss på <a href="mailto:kontakt@tryggman.se" style="color:#3A7D6E">kontakt@tryggman.se</a></p>
+</div>
+<footer>
+  <div class="footer-bottom">
+    <div>© 2026 Tryggman</div>
+    <div class="footer-crisis">Kris? Ring 90101 eller 112</div>
+  </div>
+  <div class="footer-legal">
+    <a href="integritetspolicy.html">Integritetspolicy</a>
+    <a href="användarvillkor.html">Användarvillkor</a>
+    <a href="cookies.html">Cookies</a>
+  </div>
+</footer>
+</body>
+</html>
