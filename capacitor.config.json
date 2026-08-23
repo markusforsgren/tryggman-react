@@ -1,5 +1,9 @@
 {
   "appId": "se.tryggman.app",
   "appName": "Trygg Man",
-  "webDir": "dist"
+  "webDir": "dist",
+  "server": {
+    "url": "https://tryggman.se",
+    "cleartext": true
+  }
 }
