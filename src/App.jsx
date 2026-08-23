@@ -1,3 +1,4 @@
+import { ArtiklarPage, BerattelsePage, OvningarPage, HalsaPage, CommunityPage, PriserPage } from "./Pages_tryggman";
 import { useState, useEffect, useRef, createContext, useContext } from "react";
 import { auth, db, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, collection, doc, addDoc, setDoc, getDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp, getDocs } from "./firebase";
 
@@ -913,13 +914,13 @@ const AppContent = () => {
       case 'chat': return <ChatPage nav={nav} isPremium={isPremium} currentUser={currentUser}/>;
       case 'terapeut': return <TerapeutPage nav={nav} isPremium={isPremium} currentUser={currentUser}/>;
       case 'login': return <LoginPage nav={nav}/>;
-      case 'halsa': return <PlaceholderPage title="Min hälsa" label="Välmående" nav={nav}/>;
-      case 'ovningar': return <PlaceholderPage title="Övningar" label="Mindfulness" nav={nav}/>;
-      case 'artiklar': return <PlaceholderPage title="Artiklar" label="Kunskap" nav={nav}/>;
-      case 'berattelser': return <PlaceholderPage title="Berättelser" label="Gemenskap" nav={nav}/>;
-      case 'community': return <PlaceholderPage title="Community" label="Gemenskap" nav={nav}/>;
+case 'artiklar': return <ArtiklarPage nav={nav} isPremium={isPremium}/>;
+case 'berattelser': return <BerattelsePage nav={nav} isPremium={isPremium} currentUser={currentUser}/>;
+case 'ovningar': return <OvningarPage nav={nav}/>;
+case 'halsa': return <HalsaPage nav={nav} isPremium={isPremium} currentUser={currentUser}/>;
+case 'community': return <CommunityPage nav={nav} currentUser={currentUser}/>;
+case 'priser': return <PriserPage nav={nav} currentUser={currentUser} isPremium={isPremium}/>;
       case 'konto': return <PlaceholderPage title="Mitt konto" label="Konto" nav={nav}/>;
-      case 'priser': return <PlaceholderPage title="Priser" label="Prenumeration" nav={nav}/>;
       case 'resurser': return <PlaceholderPage title="Resurser & hjälplinjer" label="Hjälp" nav={nav}/>;
       case 'om-oss': return <PlaceholderPage title="Om oss" label="Tryggman" nav={nav}/>;
       default: return <HomePage nav={nav}/>;
