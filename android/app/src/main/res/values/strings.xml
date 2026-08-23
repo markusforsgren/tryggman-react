@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Trygg Man</string>
+    <string name="title_activity_main">Trygg Man</string>
+    <string name="package_name">se.tryggman.app</string>
+    <string name="custom_url_scheme">se.tryggman.app</string>
+</resources>
