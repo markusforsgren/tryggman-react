@@ -1,8 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "firebase/auth";
-import { getFirestore, collection, doc, addDoc, setDoc, getDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp, getDocs } from "firebase/firestore";
-import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { getFirestore, collection, doc, addDoc, setDoc, getDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp, getDocs, where, increment } from "firebase/firestore";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -19,8 +18,7 @@ export const db = getFirestore(app);
 export const messaging = getMessaging(app);
 
 export { 
-  getToken, onMessage,
-   where, increment,
+  getToken, onMessage, where, increment,
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   signOut, 
