@@ -1,2 +1,8 @@
 node_modules/
 dist/
+android/app/tryggman-release.keystore
+tryggman-release.keystore
+android/gradle.properties
+android/app/tryggman-release.keystore
+tryggman-release.keystore
+android/gradle.properties

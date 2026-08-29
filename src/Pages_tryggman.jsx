@@ -1,6 +1,18 @@
 import { useState, useEffect, useRef } from "react";
 import { db, auth, collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp, doc, updateDoc, increment, getDocs, getDoc } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { Capacitor } from "@capacitor/core";
+import { Purchases } from "@revenuecat/purchases-capacitor";
+
+const IS_NATIVE = Capacitor.isNativePlatform();
+const REVENUECAT_ANDROID_KEY = "goog_XXXXXXXXXXXXXXXXXXXXXXXX"; // ersätt med er riktiga public API-nyckel från RevenueCat-dashboarden
+
+let rcConfigured = false;
+async function ensureRevenueCatConfigured(userId) {
+  if (!IS_NATIVE || rcConfigured) return;
+  await Purchases.configure({ apiKey: REVENUECAT_ANDROID_KEY, appUserID: userId });
+  rcConfigured = true;
+}
 
 /* ============================================================
    ARTIKLAR PAGE
@@ -742,8 +754,47 @@ export const CommunityPage = ({ nav, currentUser }) => {
    PRISER
    ============================================================ */
 export const PriserPage = ({ nav, currentUser, isPremium }) => {
+  const [rcLoading, setRcLoading] = useState(false);
+
+  useEffect(() => {
+    if (currentUser) ensureRevenueCatConfigured(currentUser.uid);
+  }, [currentUser]);
+
   const checkout = async (type) => {
     if (!currentUser) { nav('login'); return; }
+
+    if (IS_NATIVE) {
+      // Google Play Billing via RevenueCat
+      setRcLoading(true);
+      try {
+        await ensureRevenueCatConfigured(currentUser.uid);
+        const offerings = await Purchases.getOfferings();
+        const pkg = offerings.current?.availablePackages?.find(p => p.identifier === type);
+        if (!pkg) {
+          alert('Kunde inte hitta prenumerationen. Försök igen om en stund.');
+          setRcLoading(false);
+          return;
+        }
+        const { customerInfo } = await Purchases.purchasePackage({ aPackage: pkg });
+        const active = customerInfo.entitlements.active[type === 'premium' ? 'premium' : 'bas'];
+        if (active) {
+          // Firestore-uppdateringen sker normalt via RevenueCats webhook -> Netlify-funktion,
+          // men vi flaggar direkt lokalt också så UI känns responsivt.
+          alert('Klart! Din prenumeration är aktiv.');
+          window.location.reload();
+        }
+      } catch (e) {
+        if (e?.userCancelled) {
+          // användaren avbröt köpdialogen, inget fel att visa
+        } else {
+          alert('Något gick fel med köpet. Försök igen.');
+        }
+      }
+      setRcLoading(false);
+      return;
+    }
+
+    // Stripe för webben
     try {
       const res = await fetch('/.netlify/functions/create-checkout', {
         method:'POST', headers:{'Content-Type':'application/json'},
@@ -776,8 +827,8 @@ export const PriserPage = ({ nav, currentUser, isPremium }) => {
               <li>Community-tillgång</li>
               <li>Ingen bindningstid</li>
             </ul>
-            <button className="price-btn-tm price-btn-ghost-tm" onClick={()=>checkout('bas')} disabled={isPremium}>
-              {isPremium ? 'Du har Premium' : 'Prova 4 meddelanden gratis'}
+            <button className="price-btn-tm price-btn-ghost-tm" onClick={()=>checkout('bas')} disabled={isPremium || rcLoading}>
+              {isPremium ? 'Du har Premium' : rcLoading ? 'Öppnar...' : 'Prova 4 meddelanden gratis'}
             </button>
           </div>
           <div className="price-card-tm featured">
@@ -792,8 +843,8 @@ export const PriserPage = ({ nav, currentUser, isPremium }) => {
               <li>Allt i AI-paketet ingår</li>
               <li>Ingen bindningstid</li>
             </ul>
-            <button className="price-btn-tm price-btn-solid-tm" onClick={()=>checkout('premium')} disabled={isPremium}>
-              {isPremium ? '✓ Din aktiva plan' : 'Starta samtal med terapeut'}
+            <button className="price-btn-tm price-btn-solid-tm" onClick={()=>checkout('premium')} disabled={isPremium || rcLoading}>
+              {isPremium ? '✓ Din aktiva plan' : rcLoading ? 'Öppnar...' : 'Starta samtal med terapeut'}
             </button>
             <div style={{fontSize:'0.75rem',color:'rgba(255,255,255,0.4)',textAlign:'center',marginTop:'0.8rem',fontStyle:'italic'}}>Mindre än 12 kr om dagen</div>
           </div>
