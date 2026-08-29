@@ -1,4 +1,4 @@
-import { ArtiklarPage, BerattelsePage, OvningarPage, HalsaPage, CommunityPage, PriserPage, KontoPage, OmOssPage, IntegritetspolicyPage, AnvandarvillkorPage, CookiesPage } from "./Pages_tryggman";
+import { ArtiklarPage, BerattelsePage, OvningarPage, HalsaPage, CommunityPage, PriserPage, KontoPage, OmOssPage, IntegritetspolicyPage, AnvandarvillkorPage, CookiesPage, RaderaKontoPage } from "./Pages_tryggman";
 import { useState, useEffect, useRef, createContext, useContext } from "react";
 import { auth, db, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, collection, doc, addDoc, setDoc, getDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp, getDocs } from "./firebase";
 
@@ -993,6 +993,7 @@ case 'priser': return <PriserPage nav={nav} currentUser={currentUser} isPremium=
       case 'integritetspolicy': return <IntegritetspolicyPage nav={nav}/>;
       case 'anvandarvillkor': return <AnvandarvillkorPage nav={nav}/>;
       case 'cookies': return <CookiesPage nav={nav}/>;
+      case 'radera-konto': return <RaderaKontoPage nav={nav}/>;
       default: return <HomePage nav={nav}/>;
     }
   };
@@ -1072,6 +1073,7 @@ case 'priser': return <PriserPage nav={nav} currentUser={currentUser} isPremium=
           <button onClick={()=>nav('integritetspolicy')}>Integritetspolicy</button>
           <button onClick={()=>nav('anvandarvillkor')}>Användarvillkor</button>
           <button onClick={()=>nav('cookies')}>Cookies</button>
+          <button onClick={()=>nav('radera-konto')}>Radera konto</button>
         </div>
       </footer>
     </>

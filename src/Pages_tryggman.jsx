@@ -1220,3 +1220,40 @@ export const CookiesPage = ({ nav }) => {
     </LegalShell>
   );
 };
+
+/* ============================================================
+   RADERA KONTO PAGE
+   ============================================================ */
+export const RaderaKontoPage = ({ nav }) => (
+  <LegalShell label="Ditt konto" title="Radera konto" updated="Senast uppdaterad: Augusti 2026"
+    highlight="Du har alltid rätt att få ditt konto och din data raderad från Tryggman. Nedan beskriver vi exakt hur du gör och vad som händer med din data.">
+    <LH2>Så begär du radering</LH2>
+    <LP>Skicka ett mejl till <a href="mailto:kontakt@tryggman.se?subject=Radera%20konto" style={{color:'#3A7D6E'}}>kontakt@tryggman.se</a> med ämnesraden <strong>"Radera konto"</strong>, från den e-postadress som är kopplad till ditt Tryggman-konto.</LP>
+    <LP>Ange gärna ditt registrerade användarnamn eller e-postadress i meddelandet så vi snabbt kan hitta rätt konto.</LP>
+
+    <LH2>Vad som händer</LH2>
+    <LUL items={[
+      'Vi bekräftar mottagandet av din begäran inom 5 arbetsdagar',
+      'Ditt konto och tillhörande personuppgifter raderas inom 30 dagar från bekräftad begäran',
+      'Om du har en aktiv prenumeration avslutas den samtidigt (ingen ytterligare debitering sker)'
+    ]}/>
+
+    <LH2>Vilken data raderas</LH2>
+    <LUL items={[
+      'Kontouppgifter: e-postadress, namn, lösenord (krypterat)',
+      'Chatthistorik med AI-rådgivaren och terapeut-chatten',
+      'Måendelogg och annan personlig aktivitetsdata',
+      'Community-inlägg kopplade till ditt konto'
+    ]}/>
+
+    <LH2>Vilken data kan behöva sparas längre</LH2>
+    <LP>Av bokföringsskäl (svensk bokföringslag) sparar vi betalningshistorik i 7 år, men denna avidentifieras från ditt konto så snart det är möjligt. Detta gäller endast transaktionsdata som krävs enligt lag — inte din chatthistorik eller ditt personliga innehåll.</LP>
+
+    <LH2>Alternativ: radera själv via appen</LH2>
+    <LP>Du kan också gå till <button onClick={()=>nav('konto')} style={{color:'#3A7D6E',background:'none',border:'none',padding:0,textDecoration:'underline',cursor:'pointer',font:'inherit'}}>Mitt konto</button> och kontakta oss därifrån om du redan är inloggad.</LP>
+
+    <div style={{textAlign:'center',marginTop:'1.5rem'}}>
+      <button className="btn-ghost" onClick={()=>nav('hem')}>← Tillbaka till start</button>
+    </div>
+  </LegalShell>
+);
