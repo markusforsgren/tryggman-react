@@ -958,10 +958,28 @@ const PlaceholderPage = ({ title, label, nav }) => (
    ============================================================ */
 const AppContent = () => {
   const { currentUser, isPremium, isTherapist, signOut, auth } = useAuth();
-  const [page, setPage] = useState('hem');
+  const getPageFromPath = () => {
+    const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+    return path === '' ? 'hem' : path;
+  };
+  const [page, setPage] = useState(getPageFromPath());
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const nav = (p) => { setPage(p); setMenuOpen(false); };
+  const nav = (p) => {
+    setPage(p);
+    setMenuOpen(false);
+    const path = p === 'hem' ? '/' : `/${p}`;
+    if (window.location.pathname !== path) {
+      window.history.pushState({ page: p }, '', path);
+    }
+    window.scrollTo(0, 0);
+  };
+
+  useEffect(() => {
+    const onPopState = () => setPage(getPageFromPath());
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
 
   const menuItems = [
     { key:'chat', label:'AI-Chat', group:'plattform' },
