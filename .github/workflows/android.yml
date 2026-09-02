@@ -29,7 +29,10 @@ jobs:
         
       - name: Sync Capacitor
         run: npx cap sync android
-        
+
+      - name: Write required gradle.properties (androidx flag)
+        run: echo "android.useAndroidX=true" >> android/gradle.properties
+
       - name: Build APK
         run: cd android && ./gradlew assembleDebug
         
