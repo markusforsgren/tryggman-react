@@ -5,7 +5,7 @@ import { Capacitor } from "@capacitor/core";
 import { Purchases } from "@revenuecat/purchases-capacitor";
 
 const IS_NATIVE = Capacitor.isNativePlatform();
-const REVENUECAT_ANDROID_KEY = "goog_XXXXXXXXXXXXXXXXXXXXXXXX"; // ersätt med er riktiga public API-nyckel från RevenueCat-dashboarden
+const REVENUECAT_ANDROID_KEY = "goog_pkcJMhdjDsQSGTuOzaKdWBmaAsw";
 
 let rcConfigured = false;
 async function ensureRevenueCatConfigured(userId) {
