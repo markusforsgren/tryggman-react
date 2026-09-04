@@ -677,14 +677,28 @@ const MoodChart = ({ log }) => {
 };
 
 export const HalsaPage = ({ nav, isPremium, currentUser }) => {
+  const [activeTab, setActiveTab] = useState('mående');
   const [selectedMood, setSelectedMood] = useState(null);
   const [note, setNote] = useState('');
   const [log, setLog] = useState([]);
   const [saved, setSaved] = useState(false);
 
+  const [activityText, setActivityText] = useState('');
+  const [activityLog, setActivityLog] = useState([]);
+  const [activitySaved, setActivitySaved] = useState(false);
+
+  const [anxietyLog, setAnxietyLog] = useState([]);
+  const [anxietySaved, setAnxietySaved] = useState(false);
+
+  const todayStr = () => new Date().toLocaleDateString('sv-SE');
+
   useEffect(() => {
     const stored = localStorage.getItem('tryggman_mood_log');
     if (stored) setLog(JSON.parse(stored));
+    const storedActivity = localStorage.getItem('tryggman_activity_log');
+    if (storedActivity) setActivityLog(JSON.parse(storedActivity));
+    const storedAnxiety = localStorage.getItem('tryggman_anxiety_log');
+    if (storedAnxiety) setAnxietyLog(JSON.parse(storedAnxiety));
   }, []);
 
   const saveMood = () => {
@@ -697,6 +711,29 @@ export const HalsaPage = ({ nav, isPremium, currentUser }) => {
     setSelectedMood(null); setNote('');
     setTimeout(()=>setSaved(false), 2000);
   };
+
+  const saveActivity = () => {
+    if (!activityText.trim()) return;
+    const entry = { text: activityText.trim(), date: todayStr(), ts: Date.now() };
+    const newLog = [entry, ...activityLog].slice(0, 7);
+    setActivityLog(newLog);
+    localStorage.setItem('tryggman_activity_log', JSON.stringify(newLog));
+    setActivityText('');
+    setActivitySaved(true);
+    setTimeout(()=>setActivitySaved(false), 2000);
+  };
+
+  const saveAnxiety = (hadAnxiety) => {
+    const entry = { anxiety: hadAnxiety, date: todayStr(), ts: Date.now() };
+    const filtered = anxietyLog.filter(e => e.date !== todayStr());
+    const newLog = [entry, ...filtered].slice(0, 7);
+    setAnxietyLog(newLog);
+    localStorage.setItem('tryggman_anxiety_log', JSON.stringify(newLog));
+    setAnxietySaved(true);
+    setTimeout(()=>setAnxietySaved(false), 1500);
+  };
+
+  const todayLoggedAnxiety = anxietyLog.find(e => e.date === todayStr());
 
   const recent = log.slice(0, 7);
   const avgMood = recent.length ? recent.reduce((s,e)=>s+e.mood,0) / recent.length : null;
@@ -713,11 +750,31 @@ export const HalsaPage = ({ nav, isPremium, currentUser }) => {
 
       <div className="halsa-content">
 
+        <div style={{display:'flex',gap:'0.5rem',marginBottom:'1.5rem',borderBottom:'1px solid rgba(28,43,53,0.1)',overflowX:'auto'}}>
+          {[
+            {key:'mående', label:'Mående'},
+            {key:'aktivitet', label:'Vad gjorde du idag?'},
+            {key:'ångest', label:'Ångest'},
+          ].map(t => (
+            <button key={t.key} onClick={()=>setActiveTab(t.key)}
+              style={{
+                padding:'0.7rem 1rem', background:'none', border:'none', cursor:'pointer',
+                fontFamily:'DM Sans,sans-serif', fontSize:'0.85rem', whiteSpace:'nowrap',
+                color: activeTab===t.key ? '#1C2B35' : '#6B7A85',
+                fontWeight: activeTab===t.key ? 600 : 400,
+                borderBottom: activeTab===t.key ? '2px solid #3A7D6E' : '2px solid transparent',
+                marginBottom:'-1px'
+              }}>{t.label}</button>
+          ))}
+        </div>
+
         <div className="mood-card" style={{borderTop:'3px solid #4E9E8D'}}>
           <div style={{fontSize:'0.72rem',letterSpacing:'0.08em',textTransform:'uppercase',color:'#4E9E8D',marginBottom:'0.6rem'}}>Dagens ord</div>
           <p style={{fontFamily:'DM Serif Display,serif',fontSize:'1.15rem',color:'#1C2B35',lineHeight:1.6,fontStyle:'italic'}}>"{getDailyQuote()}"</p>
         </div>
 
+        {activeTab === 'mående' && (
+          <>
         <div className="mood-card">
           <h3 style={{fontFamily:'DM Serif Display,serif',fontSize:'1.3rem',color:'#1C2B35',marginBottom:'1rem'}}>Hur mår du idag?</h3>
           <div className="mood-scale">
@@ -774,6 +831,76 @@ export const HalsaPage = ({ nav, isPremium, currentUser }) => {
             ))}
           </div>
         )}
+          </>
+        )}
+
+        {activeTab === 'aktivitet' && (
+          <>
+            <div className="mood-card">
+              <h3 style={{fontFamily:'DM Serif Display,serif',fontSize:'1.3rem',color:'#1C2B35',marginBottom:'0.5rem'}}>Vad har du gjort idag för att må bra?</h3>
+              <p style={{fontSize:'0.82rem',color:'#6B7A85',marginBottom:'1rem'}}>En kort mening räcker — en promenad, ett samtal, tio minuters vila. Sparas i 7 dagar.</p>
+              <textarea className="post-textarea" placeholder="T.ex. Tog en promenad på lunchen..." value={activityText} onChange={e=>setActivityText(e.target.value)} style={{minHeight:'80px'}}/>
+              <button className="btn-primary" onClick={saveActivity} disabled={!activityText.trim()}>
+                {activitySaved ? '✓ Sparat!' : 'Logga dagens sak'}
+              </button>
+            </div>
+
+            {activityLog.length > 0 && (
+              <div className="mood-card">
+                <h3 style={{fontFamily:'DM Serif Display,serif',fontSize:'1.2rem',color:'#1C2B35',marginBottom:'1rem'}}>Senaste 7 dagarna</h3>
+                {activityLog.map((entry,i) => (
+                  <div key={i} style={{padding:'0.9rem 0',borderBottom: i<activityLog.length-1 ? '1px solid rgba(28,43,53,0.06)' : 'none'}}>
+                    <div style={{fontSize:'0.72rem',color:'#4E9E8D',fontWeight:600,marginBottom:'0.3rem'}}>{entry.date}</div>
+                    <div style={{fontSize:'0.9rem',color:'#1C2B35',lineHeight:1.6}}>{entry.text}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {activeTab === 'ångest' && (
+          <>
+            <div className="mood-card">
+              <h3 style={{fontFamily:'DM Serif Display,serif',fontSize:'1.3rem',color:'#1C2B35',marginBottom:'1rem'}}>Har du haft ångest idag?</h3>
+              <div style={{display:'flex',gap:'0.8rem',marginBottom:'0.5rem'}}>
+                <button
+                  onClick={()=>saveAnxiety(true)}
+                  className="btn-primary"
+                  style={{flex:1, background: todayLoggedAnxiety?.anxiety===true ? '#C0563A' : undefined, borderColor: todayLoggedAnxiety?.anxiety===true ? '#C0563A' : undefined}}
+                >Ja</button>
+                <button
+                  onClick={()=>saveAnxiety(false)}
+                  className="btn-ghost"
+                  style={{flex:1, background: todayLoggedAnxiety?.anxiety===false ? '#3A7D6E' : undefined, color: todayLoggedAnxiety?.anxiety===false ? '#fff' : undefined}}
+                >Nej</button>
+              </div>
+              {anxietySaved && <p style={{fontSize:'0.8rem',color:'#4E9E8D',marginTop:'0.5rem'}}>✓ Sparat för idag</p>}
+            </div>
+
+            {anxietyLog.length > 0 && (
+              <div className="mood-card">
+                <h3 style={{fontFamily:'DM Serif Display,serif',fontSize:'1.2rem',color:'#1C2B35',marginBottom:'1rem'}}>Senaste 7 dagarna</h3>
+                <div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap'}}>
+                  {[...anxietyLog].reverse().map((entry,i) => (
+                    <div key={i} style={{
+                      flex:'1 1 60px', textAlign:'center', padding:'0.8rem 0.4rem',
+                      background: entry.anxiety ? 'rgba(192,86,58,0.1)' : 'rgba(58,125,110,0.1)',
+                      borderTop: `3px solid ${entry.anxiety ? '#C0563A' : '#3A7D6E'}`
+                    }}>
+                      <div style={{fontSize:'1.2rem',marginBottom:'0.3rem'}}>{entry.anxiety ? '●' : '○'}</div>
+                      <div style={{fontSize:'0.68rem',color:'#6B7A85'}}>{entry.date.slice(5)}</div>
+                    </div>
+                  ))}
+                </div>
+                <p style={{fontSize:'0.78rem',color:'#6B7A85',marginTop:'1rem'}}>
+                  {anxietyLog.filter(e=>e.anxiety).length} av {anxietyLog.length} loggade dagar med ångest.
+                </p>
+              </div>
+            )}
+          </>
+        )}
+
       </div>
     </>
   );
