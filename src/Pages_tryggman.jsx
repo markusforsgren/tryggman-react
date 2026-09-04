@@ -787,7 +787,7 @@ export const PriserPage = ({ nav, currentUser, isPremium }) => {
         if (e?.userCancelled) {
           // användaren avbröt köpdialogen, inget fel att visa
         } else {
-          alert('Något gick fel med köpet. Försök igen.');
+          alert('Något gick fel med köpet. Försök igen om en liten stund, eller kontakta oss om problemet kvarstår.');
         }
       }
       setRcLoading(false);
@@ -1257,3 +1257,181 @@ export const RaderaKontoPage = ({ nav }) => (
     </div>
   </LegalShell>
 );
+
+/* ============================================================
+   TERAPEUT DASHBOARD (för inloggade terapeuter)
+   ============================================================ */
+const formatChatTime = (ts) => {
+  if (!ts) return '';
+  try {
+    const d = ts.toDate ? ts.toDate() : new Date(ts.seconds * 1000);
+    return d.toLocaleString('sv-SE', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+  } catch { return ''; }
+};
+
+export const TerapeutDashboardPage = ({ nav, isTherapist, currentUser }) => {
+  const [chats, setChats] = useState([]);
+  const [activeChatId, setActiveChatId] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [reply, setReply] = useState('');
+  const [sending, setSending] = useState(false);
+  const bottomRef = useRef(null);
+
+  // Lista över alla chattar, senast uppdaterad överst
+  useEffect(() => {
+    if (!isTherapist) return;
+    const q = query(collection(db, 'chats'), orderBy('updatedAt', 'desc'));
+    return onSnapshot(q, snap => setChats(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
+  }, [isTherapist]);
+
+  // Meddelanden i den öppnade chatten
+  useEffect(() => {
+    if (!activeChatId) { setMessages([]); return; }
+    const q = query(collection(db, 'chats', activeChatId, 'messages'), orderBy('createdAt'));
+    return onSnapshot(q, snap => setMessages(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
+  }, [activeChatId]);
+
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+
+  const sendReply = async (e) => {
+    e.preventDefault();
+    if (!reply.trim() || !activeChatId || sending) return;
+    setSending(true);
+    const text = reply;
+    setReply('');
+    try {
+      await addDoc(collection(db, 'chats', activeChatId, 'messages'), {
+        text, sender: 'therapist',
+        senderName: currentUser?.displayName || 'Terapeut',
+        createdAt: serverTimestamp()
+      });
+      await updateDoc(doc(db, 'chats', activeChatId), {
+        lastMessage: text, updatedAt: serverTimestamp(),
+        therapistReplied: true, queueStatus: 'answered'
+      });
+    } catch (err) {
+      alert('Kunde inte skicka svaret. Försök igen.');
+      setReply(text);
+    }
+    setSending(false);
+  };
+
+  if (!currentUser) {
+    return (
+      <div>
+        <div className="page-hero">
+          <div className="section-label">Terapeutpanel</div>
+          <h1>Terapeutpanel</h1>
+          <p>Logga in med ditt terapeutkonto för att fortsätta.</p>
+        </div>
+        <div style={{ padding: '3rem 8%', textAlign: 'center' }}>
+          <button className="btn-primary" onClick={() => nav('login')}>Logga in</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isTherapist) {
+    return (
+      <div>
+        <div className="page-hero">
+          <div className="section-label">Terapeutpanel</div>
+          <h1>Ingen åtkomst</h1>
+          <p>Det här kontot har inte behörighet till terapeutpanelen.</p>
+        </div>
+        <div style={{ padding: '3rem 8%', textAlign: 'center' }}>
+          <button className="btn-ghost" onClick={() => nav('hem')}>← Tillbaka till start</button>
+        </div>
+      </div>
+    );
+  }
+
+  const activeChat = chats.find(c => c.id === activeChatId);
+  const waiting = chats.filter(c => c.queueStatus === 'waiting');
+  const answered = chats.filter(c => c.queueStatus !== 'waiting');
+
+  const ChatListItem = (c) => (
+    <div key={c.id} onClick={() => setActiveChatId(c.id)}
+      style={{
+        padding: '1rem', cursor: 'pointer',
+        background: activeChatId === c.id ? '#F2EDE5' : '#fff',
+        borderLeft: c.queueStatus === 'waiting' ? '3px solid #C0563A' : '3px solid transparent',
+        borderBottom: '1px solid rgba(28,43,53,0.08)'
+      }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.3rem' }}>
+        <span style={{ fontWeight: 600, fontSize: '0.88rem', color: '#1C2B35' }}>{c.userName || c.userEmail || 'Okänd användare'}</span>
+        <span style={{ fontSize: '0.72rem', color: '#6B7A85' }}>{formatChatTime(c.updatedAt)}</span>
+      </div>
+      <div style={{ fontSize: '0.8rem', color: '#6B7A85', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {c.lastMessage}
+      </div>
+      {c.queueStatus === 'waiting' && (
+        <div style={{ fontSize: '0.7rem', color: '#C0563A', marginTop: '0.3rem', fontWeight: 600 }}>● Väntar på svar</div>
+      )}
+    </div>
+  );
+
+  return (
+    <div>
+      <div className="page-hero" style={{ paddingBottom: '1.5rem' }}>
+        <div className="section-label">Terapeutpanel</div>
+        <h1>Konversationer</h1>
+        <p>{waiting.length} väntar på svar · {chats.length} totalt</p>
+      </div>
+
+      <div style={{ display: 'flex', minHeight: '70vh', maxWidth: '1200px', margin: '0 auto', border: '1px solid rgba(28,43,53,0.1)' }}>
+        {/* Chattlista */}
+        <div style={{ width: '320px', flexShrink: 0, borderRight: '1px solid rgba(28,43,53,0.1)', overflowY: 'auto', maxHeight: '75vh' }}>
+          {chats.length === 0 && (
+            <div style={{ padding: '2rem', textAlign: 'center', color: '#6B7A85', fontSize: '0.85rem' }}>Inga konversationer än.</div>
+          )}
+          {waiting.length > 0 && (
+            <div style={{ padding: '0.6rem 1rem', fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#C0563A', background: '#F2EDE5' }}>Väntar</div>
+          )}
+          {waiting.map(ChatListItem)}
+          {answered.length > 0 && (
+            <div style={{ padding: '0.6rem 1rem', fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6B7A85', background: '#F2EDE5' }}>Besvarade</div>
+          )}
+          {answered.map(ChatListItem)}
+        </div>
+
+        {/* Aktiv konversation */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          {!activeChatId ? (
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B7A85', fontSize: '0.9rem' }}>
+              Välj en konversation i listan.
+            </div>
+          ) : (
+            <>
+              <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid rgba(28,43,53,0.1)', background: '#F2EDE5' }}>
+                <div style={{ fontWeight: 600, color: '#1C2B35' }}>{activeChat?.userName || activeChat?.userEmail}</div>
+                <div style={{ fontSize: '0.75rem', color: '#6B7A85' }}>{activeChat?.userEmail}</div>
+              </div>
+              <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.8rem', maxHeight: '55vh' }}>
+                {messages.map(m => (
+                  <div key={m.id} style={{ display: 'flex', justifyContent: m.sender === 'user' ? 'flex-start' : 'flex-end' }}>
+                    <div style={{
+                      maxWidth: '70%', padding: '0.7rem 1rem', fontSize: '0.88rem', lineHeight: 1.6,
+                      background: m.sender === 'user' ? '#fff' : '#1C2B35',
+                      color: m.sender === 'user' ? '#1C2B35' : '#fff',
+                      border: m.sender === 'user' ? '1px solid rgba(28,43,53,0.12)' : 'none'
+                    }}>
+                      {m.text}
+                      <div style={{ fontSize: '0.68rem', opacity: 0.5, marginTop: '4px' }}>{formatChatTime(m.createdAt)}</div>
+                    </div>
+                  </div>
+                ))}
+                <div ref={bottomRef} />
+              </div>
+              <form onSubmit={sendReply} style={{ display: 'flex', gap: '0.6rem', padding: '1rem 1.5rem', borderTop: '1px solid rgba(28,43,53,0.1)' }}>
+                <input value={reply} onChange={e => setReply(e.target.value)} placeholder="Skriv ditt svar..."
+                  style={{ flex: 1, padding: '0.7rem 1rem', border: '1px solid rgba(28,43,53,0.15)', fontSize: '0.9rem', fontFamily: 'DM Sans,sans-serif' }} />
+                <button type="submit" className="btn-primary" disabled={!reply.trim() || sending}>{sending ? '...' : 'Skicka'}</button>
+              </form>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};

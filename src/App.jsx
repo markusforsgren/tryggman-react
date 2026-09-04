@@ -1,4 +1,4 @@
-import { ArtiklarPage, BerattelsePage, OvningarPage, HalsaPage, CommunityPage, PriserPage, KontoPage, OmOssPage, IntegritetspolicyPage, AnvandarvillkorPage, CookiesPage, RaderaKontoPage } from "./Pages_tryggman";
+import { ArtiklarPage, BerattelsePage, OvningarPage, HalsaPage, CommunityPage, PriserPage, KontoPage, OmOssPage, IntegritetspolicyPage, AnvandarvillkorPage, CookiesPage, RaderaKontoPage, TerapeutDashboardPage } from "./Pages_tryggman";
 import { useState, useEffect, useRef, createContext, useContext } from "react";
 import { auth, db, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, collection, doc, addDoc, setDoc, getDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp, getDocs } from "./firebase";
 
@@ -991,6 +991,7 @@ const AppContent = () => {
     { key:'community', label:'Community', group:'plattform' },
     { key:'priser', label:'Priser', group:'konto' },
     { key:'konto', label:'Mitt konto', group:'konto' },
+    ...(isTherapist ? [{ key:'terapeut-dashboard', label:'Terapeutpanel', group:'konto' }] : []),
   ];
 
   const renderPage = () => {
@@ -1012,6 +1013,7 @@ case 'priser': return <PriserPage nav={nav} currentUser={currentUser} isPremium=
       case 'anvandarvillkor': return <AnvandarvillkorPage nav={nav}/>;
       case 'cookies': return <CookiesPage nav={nav}/>;
       case 'radera-konto': return <RaderaKontoPage nav={nav}/>;
+      case 'terapeut-dashboard': return <TerapeutDashboardPage nav={nav} isTherapist={isTherapist} currentUser={currentUser}/>;
       default: return <HomePage nav={nav}/>;
     }
   };
