@@ -828,7 +828,7 @@ export const PriserPage = ({ nav, currentUser, isPremium }) => {
               <li>Ingen bindningstid</li>
             </ul>
             <button className="price-btn-tm price-btn-ghost-tm" onClick={()=>checkout('bas')} disabled={isPremium || rcLoading}>
-              {isPremium ? 'Du har Premium' : rcLoading ? 'Öppnar...' : 'Prova 4 meddelanden gratis'}
+              {isPremium ? 'Du har Premium' : rcLoading ? 'Öppnar...' : 'Uppgradera till Bas — 39 kr/mån'}
             </button>
           </div>
           <div className="price-card-tm featured">
