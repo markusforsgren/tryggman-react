@@ -1,4 +1,4 @@
-import { ArtiklarPage, BerattelsePage, OvningarPage, HalsaPage, CommunityPage, PriserPage, KontoPage, OmOssPage, IntegritetspolicyPage, AnvandarvillkorPage, CookiesPage, RaderaKontoPage, TerapeutDashboardPage } from "./Pages_tryggman";
+import { ArtiklarPage, BerattelsePage, OvningarPage, HalsaPage, CommunityPage, PriserPage, KontoPage, OmOssPage, IntegritetspolicyPage, AnvandarvillkorPage, CookiesPage, RaderaKontoPage, TerapeutDashboardPage, ResurserPage } from "./Pages_tryggman";
 import { useState, useEffect, useRef, createContext, useContext } from "react";
 import { auth, db, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, collection, doc, addDoc, setDoc, getDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp, getDocs } from "./firebase";
 
@@ -1007,7 +1007,7 @@ case 'halsa': return <HalsaPage nav={nav} isPremium={isPremium} currentUser={cur
 case 'community': return <CommunityPage nav={nav} currentUser={currentUser}/>;
 case 'priser': return <PriserPage nav={nav} currentUser={currentUser} isPremium={isPremium}/>;
       case 'konto': return <KontoPage nav={nav} currentUser={currentUser} isPremium={isPremium} signOut={signOut} auth={auth}/>;
-      case 'resurser': return <PlaceholderPage title="Resurser & hjälplinjer" label="Hjälp" nav={nav}/>;
+      case 'resurser': return <ResurserPage nav={nav}/>;
       case 'om-oss': return <OmOssPage nav={nav}/>;
       case 'integritetspolicy': return <IntegritetspolicyPage nav={nav}/>;
       case 'anvandarvillkor': return <AnvandarvillkorPage nav={nav}/>;

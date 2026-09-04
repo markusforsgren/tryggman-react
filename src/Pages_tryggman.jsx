@@ -1435,3 +1435,83 @@ export const TerapeutDashboardPage = ({ nav, isTherapist, currentUser }) => {
     </div>
   );
 };
+
+/* ============================================================
+   RESURSER & HJÄLPLINJER
+   ============================================================ */
+const ResourceCard = ({ name, phone, phoneHref, when, desc, url }) => (
+  <div style={{ background: '#fff', border: '1px solid rgba(28,43,53,0.1)', borderLeft: '3px solid #3A7D6E', padding: '1.3rem 1.5rem', marginBottom: '1rem' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: '0.4rem' }}>
+      <div style={{ fontFamily: 'DM Serif Display,serif', fontSize: '1.15rem', color: '#1C2B35' }}>{name}</div>
+      <a href={phoneHref} style={{ fontSize: '1.05rem', fontWeight: 600, color: '#3A7D6E', textDecoration: 'none' }}>{phone}</a>
+    </div>
+    <div style={{ fontSize: '0.78rem', color: '#4E9E8D', marginTop: '0.2rem', fontWeight: 500 }}>{when}</div>
+    <p style={{ fontSize: '0.87rem', color: '#6B7A85', marginTop: '0.6rem', lineHeight: 1.6 }}>{desc}</p>
+    {url && <a href={url} target="_blank" rel="noreferrer" style={{ fontSize: '0.8rem', color: '#3A7D6E' }}>{url.replace('https://', '')}</a>}
+  </div>
+);
+
+export const ResurserPage = ({ nav }) => (
+  <div>
+    <div className="page-hero">
+      <div className="section-label">Hjälp</div>
+      <h1>Resurser & <em>hjälplinjer</em></h1>
+      <p>Tryggman ersätter inte akut vård eller professionell krishantering. Här är de organisationer som faktiskt kan hjälpa dig just nu — dygnet runt, kostnadsfritt, anonymt.</p>
+    </div>
+
+    <div style={{ background: '#C0563A', padding: '1.3rem 8%', textAlign: 'center' }}>
+      <div style={{ fontFamily: 'DM Serif Display,serif', fontSize: '1.3rem', color: '#fff', marginBottom: '0.3rem' }}>Akut fara för liv? Ring 112</div>
+      <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.9)' }}>Om du eller någon annan är i omedelbar fara, ring 112 nu — vänta inte.</div>
+    </div>
+
+    <div style={{ padding: '3rem 8% 5rem', maxWidth: '700px', margin: '0 auto' }}>
+
+      <div className="section-label" style={{ marginBottom: '0.8rem' }}>Självmordstankar eller akut psykisk kris</div>
+      <ResourceCard
+        name="Mind Självmordslinjen"
+        phone="90101" phoneHref="tel:90101"
+        when="Telefon & chatt · Dygnet runt, alla dagar"
+        desc="För dig som har tankar på att ta ditt liv, eller är orolig för någon närstående. Helt anonymt — varken ditt telefonnummer eller din IP-adress syns för volontärerna."
+        url="https://mind.se"
+      />
+      <ResourceCard
+        name="Jourhavande medmänniska"
+        phone="08-702 16 80" phoneHref="tel:0870216800"
+        when="Telefon: varje kväll 21.00–06.00 · Chatt: begränsade kvällar"
+        desc="Prata anonymt om det som känns svårt just nu, mitt i natten när annat är stängt."
+      />
+
+      <div className="section-label" style={{ margin: '2.5rem 0 0.8rem' }}>Stöd särskilt för män</div>
+      <ResourceCard
+        name="Mansjouren Sverige"
+        phone="08-30 30 20" phoneHref="tel:08303020"
+        when="Dagligen 12.00–14.00 samt 17.00–20.00 (lördagar endast 12.00–14.00)"
+        desc="Stöd för dig som vill prata om relationer, jobb, ekonomi, barn eller framtiden. Bemannas av volontärer, riktat specifikt till män."
+        url="https://mansjouren.se"
+      />
+
+      <div className="section-label" style={{ margin: '2.5rem 0 0.8rem' }}>Vård och medicinsk rådgivning</div>
+      <ResourceCard
+        name="1177 Vårdguiden"
+        phone="1177" phoneHref="tel:1177"
+        when="Dygnet runt"
+        desc="Sjukvårdsrådgivning och hänvisning till närmaste psykiatriska akutmottagning om du behöver professionell vård omgående."
+        url="https://1177.se"
+      />
+      <ResourceCard
+        name="Kyrkans SOS"
+        phone="0771-800 650" phoneHref="tel:0771800650"
+        when="Jourtelefon och chatt"
+        desc="För dig som vill dela det svåra med någon, oavsett tro eller livsåskådning. Tystnadsplikt gäller alltid."
+      />
+
+      <div style={{ marginTop: '2.5rem', padding: '1.2rem 1.5rem', background: '#F2EDE5', fontSize: '0.85rem', color: '#6B7A85', lineHeight: 1.7 }}>
+        Tryggmans AI-rådgivare och terapeut-chatt är stödverktyg, inte akutvård. AI-rådgivaren är inte en legitimerad terapeut, och terapeuten svarar asynkront — inte i realtid vid en pågående kris. Om läget känns akut, använd numren ovan istället.
+      </div>
+
+      <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+        <button className="btn-ghost" onClick={() => nav('hem')}>← Tillbaka till start</button>
+      </div>
+    </div>
+  </div>
+);
