@@ -99,7 +99,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .ticker-wrap::before,.ticker-wrap::after{content:'';position:absolute;top:0;bottom:0;width:5rem;z-index:2;pointer-events:none}
 .ticker-wrap::before{left:0;background:linear-gradient(to right,#1C2B35,transparent)}
 .ticker-wrap::after{right:0;background:linear-gradient(to left,#1C2B35,transparent)}
-.ticker-track{display:flex;white-space:nowrap;animation:ticker 55s linear infinite}
+.ticker-track{display:flex;white-space:nowrap;animation:ticker 26s linear infinite}
 .ticker-track:hover{animation-play-state:paused}
 @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .ticker-item{display:inline-flex;align-items:center;gap:0.5rem;padding:0 2.5rem;font-size:0.8rem;font-weight:300}

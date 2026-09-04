@@ -608,6 +608,74 @@ export const OvningarPage = ({ nav }) => {
 /* ============================================================
    HÄLSA / MÅENDE
    ============================================================ */
+const DAILY_QUOTES = [
+  'Styrka är inte att hålla masken — det är att ta av sig den.',
+  'Du är inte svag för att du behöver stöd. Du är modig.',
+  'Det du känner är giltigt, även när ingen annan ser det.',
+  'Att be om hjälp är ett av de modigaste besluten du kan fatta.',
+  'Tystnad skyddar ingen. Minst av allt dig själv.',
+  'Du behöver inte ha alla svar för att ta första steget.',
+  'Dåliga dagar är inte bevis på ett dåligt liv.',
+  'Ingen förväntar sig att du ska klara allt själv — det gör inte du heller behöva.',
+  'Framsteg syns sällan dag för dag. Det syns i backspegeln.',
+  'Att känna efter är inte att vara svag. Det är att vara ärlig.',
+  'Du får ta plats med det du bär på.',
+  'Vila är inte att ge upp. Det är en del av att orka vidare.',
+  'Ett samtal kan väga tyngre än du tror, både för dig och för den du pratar med.',
+  'Du är inte ensam om att inte ha koll på allt.'
+];
+const dayOfYear = (d = new Date()) => {
+  const start = new Date(d.getFullYear(), 0, 0);
+  return Math.floor((d - start) / 86400000);
+};
+const getDailyQuote = () => DAILY_QUOTES[dayOfYear() % DAILY_QUOTES.length];
+
+const ENERGY_TIPS = [
+  'Gå ut i dagsljus inom en timme efter att du vaknat — det hjälper din inre klocka att ställa in sig rätt.',
+  'Ät ett proteinrikt mellanmål istället för snabba kolhydrater när energin dippar mitt på dagen.',
+  'Ta tre medvetna, långsamma andetag innan du går in i nästa möte eller uppgift.',
+  'Korta pauser (5 minuter) var 90:e minut ger mer energi över dagen än en lång rast sent.',
+  'Skjut upp mobilen 30 minuter efter att du vaknat — låt hjärnan starta i din egen takt.',
+  'En kort promenad, även 10 minuter, återställer koncentrationen bättre än kaffe nummer tre.',
+  'Sömn samma tid varje kväll gör mer för din energi än antalet timmar i sig.',
+  'Prata med någon om det som tynger dig — otalade tankar kostar mer energi än man tror.',
+  'Drick ett glas vatten innan du dricker kaffe — lätt uttorkning maskeras ofta som trötthet.',
+  'Sätt ett tydligt slut på arbetsdagen. Oavslutade uppgifter i huvudet dränerar energi även på fritiden.',
+  'Rör på kroppen innan du känner dig redo för det — motivationen kommer ofta efter, inte före.',
+  'Undvik att skrolla i sängen. Hjärnan varvar ner sämre, vilket syns i morgondagens energi.'
+];
+const getDailyTips = () => {
+  const start = dayOfYear() * 3;
+  return [0,1,2].map(i => ENERGY_TIPS[(start + i) % ENERGY_TIPS.length]);
+};
+
+const MoodChart = ({ log }) => {
+  const points = [...log].slice(0, 14).reverse();
+  if (points.length < 2) return (
+    <p style={{color:'#6B7A85',fontSize:'0.85rem',textAlign:'center',padding:'2rem 0'}}>Logga mående några dagar till för att se en kurva över tid.</p>
+  );
+  const w = 600, h = 160, pad = 20;
+  const stepX = (w - pad*2) / (points.length - 1);
+  const coords = points.map((p,i) => {
+    const x = pad + i*stepX;
+    const y = h - pad - ((p.mood-1)/9) * (h - pad*2);
+    return `${x},${y}`;
+  });
+  const pathD = 'M' + coords.join(' L');
+  const areaD = pathD + ` L${pad + (points.length-1)*stepX},${h-pad} L${pad},${h-pad} Z`;
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} style={{width:'100%',height:'auto'}}>
+      <line x1={pad} y1={h-pad} x2={w-pad} y2={h-pad} stroke="rgba(28,43,53,0.1)" strokeWidth="1"/>
+      <path d={areaD} fill="rgba(58,125,110,0.08)" stroke="none"/>
+      <path d={pathD} fill="none" stroke="#3A7D6E" strokeWidth="2.5"/>
+      {coords.map((c,i) => {
+        const [x,y] = c.split(',');
+        return <circle key={i} cx={x} cy={y} r="3.5" fill="#3A7D6E"/>;
+      })}
+    </svg>
+  );
+};
+
 export const HalsaPage = ({ nav, isPremium, currentUser }) => {
   const [selectedMood, setSelectedMood] = useState(null);
   const [note, setNote] = useState('');
@@ -622,13 +690,18 @@ export const HalsaPage = ({ nav, isPremium, currentUser }) => {
   const saveMood = () => {
     if (!selectedMood) return;
     const entry = { mood: selectedMood, note, date: new Date().toLocaleDateString('sv-SE'), ts: Date.now() };
-    const newLog = [entry, ...log].slice(0, 30);
+    const newLog = [entry, ...log].slice(0, 60);
     setLog(newLog);
     localStorage.setItem('tryggman_mood_log', JSON.stringify(newLog));
     setSaved(true);
     setSelectedMood(null); setNote('');
     setTimeout(()=>setSaved(false), 2000);
   };
+
+  const recent = log.slice(0, 7);
+  const avgMood = recent.length ? recent.reduce((s,e)=>s+e.mood,0) / recent.length : null;
+  const energyPct = avgMood ? Math.round(avgMood * 10) : null;
+  const dailyTips = getDailyTips();
 
   return (
     <>
@@ -639,6 +712,12 @@ export const HalsaPage = ({ nav, isPremium, currentUser }) => {
       </div>
 
       <div className="halsa-content">
+
+        <div className="mood-card" style={{borderTop:'3px solid #4E9E8D'}}>
+          <div style={{fontSize:'0.72rem',letterSpacing:'0.08em',textTransform:'uppercase',color:'#4E9E8D',marginBottom:'0.6rem'}}>Dagens ord</div>
+          <p style={{fontFamily:'DM Serif Display,serif',fontSize:'1.15rem',color:'#1C2B35',lineHeight:1.6,fontStyle:'italic'}}>"{getDailyQuote()}"</p>
+        </div>
+
         <div className="mood-card">
           <h3 style={{fontFamily:'DM Serif Display,serif',fontSize:'1.3rem',color:'#1C2B35',marginBottom:'1rem'}}>Hur mår du idag?</h3>
           <div className="mood-scale">
@@ -654,6 +733,34 @@ export const HalsaPage = ({ nav, isPremium, currentUser }) => {
             {saved ? '✓ Sparat!' : 'Logga mående'}
           </button>
         </div>
+
+        {log.length >= 2 && (
+          <div className="mood-card">
+            <h3 style={{fontFamily:'DM Serif Display,serif',fontSize:'1.2rem',color:'#1C2B35',marginBottom:'1rem'}}>Din kurva — senaste 14 loggarna</h3>
+            <MoodChart log={log}/>
+          </div>
+        )}
+
+        {energyPct !== null && (
+          <div className="mood-card">
+            <h3 style={{fontFamily:'DM Serif Display,serif',fontSize:'1.2rem',color:'#1C2B35',marginBottom:'0.3rem'}}>Din energinivå</h3>
+            <p style={{fontSize:'0.78rem',color:'#6B7A85',marginBottom:'1rem'}}>Baserad på ditt snittmående senaste {recent.length} {recent.length===1?'logg':'loggar'}</p>
+            <div style={{background:'#F2EDE5',borderRadius:'8px',height:'14px',overflow:'hidden',marginBottom:'0.5rem'}}>
+              <div style={{width:`${energyPct}%`,height:'100%',background:'linear-gradient(90deg,#3A7D6E,#4E9E8D)',borderRadius:'8px',transition:'width 0.4s'}}/>
+            </div>
+            <div style={{textAlign:'right',fontFamily:'DM Serif Display,serif',fontSize:'1.4rem',color:'#1C2B35'}}>{energyPct}%</div>
+
+            <div style={{marginTop:'1.5rem',paddingTop:'1.5rem',borderTop:'1px solid rgba(28,43,53,0.08)'}}>
+              <div style={{fontSize:'0.72rem',letterSpacing:'0.08em',textTransform:'uppercase',color:'#4E9E8D',marginBottom:'0.8rem'}}>Dagens tips för mer energi</div>
+              {dailyTips.map((tip,i) => (
+                <div key={i} style={{display:'flex',gap:'0.7rem',marginBottom:'0.8rem',alignItems:'flex-start'}}>
+                  <span style={{color:'#3A7D6E',fontWeight:600,flexShrink:0}}>{i+1}.</span>
+                  <span style={{fontSize:'0.88rem',color:'#6B7A85',lineHeight:1.6}}>{tip}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {log.length > 0 && (
           <div className="mood-card">
