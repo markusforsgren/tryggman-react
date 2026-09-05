@@ -715,7 +715,7 @@ export const HalsaPage = ({ nav, isPremium, currentUser }) => {
   const saveActivity = () => {
     if (!activityText.trim()) return;
     const entry = { text: activityText.trim(), date: todayStr(), ts: Date.now() };
-    const newLog = [entry, ...activityLog].slice(0, 7);
+    const newLog = [entry, ...activityLog].slice(0, 30);
     setActivityLog(newLog);
     localStorage.setItem('tryggman_activity_log', JSON.stringify(newLog));
     setActivityText('');
@@ -726,7 +726,7 @@ export const HalsaPage = ({ nav, isPremium, currentUser }) => {
   const saveAnxiety = (hadAnxiety) => {
     const entry = { anxiety: hadAnxiety, date: todayStr(), ts: Date.now() };
     const filtered = anxietyLog.filter(e => e.date !== todayStr());
-    const newLog = [entry, ...filtered].slice(0, 7);
+    const newLog = [entry, ...filtered].slice(0, 30);
     setAnxietyLog(newLog);
     localStorage.setItem('tryggman_anxiety_log', JSON.stringify(newLog));
     setAnxietySaved(true);
@@ -734,6 +734,50 @@ export const HalsaPage = ({ nav, isPremium, currentUser }) => {
   };
 
   const todayLoggedAnxiety = anxietyLog.find(e => e.date === todayStr());
+
+  const uniqueLoggedDays = new Set([
+    ...log.map(e=>e.date),
+    ...activityLog.map(e=>e.date),
+    ...anxietyLog.map(e=>e.date),
+  ]).size;
+  const INSIGHT_THRESHOLD = 5;
+  const insightsUnlocked = uniqueLoggedDays >= INSIGHT_THRESHOLD;
+
+  const [insight, setInsight] = useState(null);
+  const [insightLoading, setInsightLoading] = useState(false);
+  const [insightError, setInsightError] = useState(false);
+
+  const fetchInsight = async () => {
+    setInsightLoading(true);
+    setInsightError(false);
+    try {
+      const res = await fetch('/.netlify/functions/health-insights', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ moodLog: log.slice(0,30), activityLog: activityLog.slice(0,30), anxietyLog: anxietyLog.slice(0,30) })
+      });
+      const data = await res.json();
+      if (data.insight) {
+        setInsight(data.insight);
+        localStorage.setItem('tryggman_insight_cache', JSON.stringify({ text: data.insight, date: todayStr() }));
+      } else {
+        setInsightError(true);
+      }
+    } catch {
+      setInsightError(true);
+    }
+    setInsightLoading(false);
+  };
+
+  useEffect(() => {
+    if (activeTab !== 'insikter' || !insightsUnlocked) return;
+    const cached = localStorage.getItem('tryggman_insight_cache');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (parsed.date === todayStr()) { setInsight(parsed.text); return; }
+    }
+    fetchInsight();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, insightsUnlocked]);
 
   const recent = log.slice(0, 7);
   const avgMood = recent.length ? recent.reduce((s,e)=>s+e.mood,0) / recent.length : null;
@@ -755,6 +799,7 @@ export const HalsaPage = ({ nav, isPremium, currentUser }) => {
             {key:'mående', label:'Mående'},
             {key:'aktivitet', label:'Vad gjorde du idag?'},
             {key:'ångest', label:'Ångest'},
+            {key:'insikter', label:'Insikter'},
           ].map(t => (
             <button key={t.key} onClick={()=>setActiveTab(t.key)}
               style={{
@@ -838,7 +883,7 @@ export const HalsaPage = ({ nav, isPremium, currentUser }) => {
           <>
             <div className="mood-card">
               <h3 style={{fontFamily:'DM Serif Display,serif',fontSize:'1.3rem',color:'#1C2B35',marginBottom:'0.5rem'}}>Vad har du gjort idag för att må bra?</h3>
-              <p style={{fontSize:'0.82rem',color:'#6B7A85',marginBottom:'1rem'}}>En kort mening räcker — en promenad, ett samtal, tio minuters vila. Sparas i 7 dagar.</p>
+              <p style={{fontSize:'0.82rem',color:'#6B7A85',marginBottom:'1rem'}}>En kort mening räcker — en promenad, ett samtal, tio minuters vila. Sparas i 30 dagar.</p>
               <textarea className="post-textarea" placeholder="T.ex. Tog en promenad på lunchen..." value={activityText} onChange={e=>setActivityText(e.target.value)} style={{minHeight:'80px'}}/>
               <button className="btn-primary" onClick={saveActivity} disabled={!activityText.trim()}>
                 {activitySaved ? '✓ Sparat!' : 'Logga dagens sak'}
@@ -847,7 +892,7 @@ export const HalsaPage = ({ nav, isPremium, currentUser }) => {
 
             {activityLog.length > 0 && (
               <div className="mood-card">
-                <h3 style={{fontFamily:'DM Serif Display,serif',fontSize:'1.2rem',color:'#1C2B35',marginBottom:'1rem'}}>Senaste 7 dagarna</h3>
+                <h3 style={{fontFamily:'DM Serif Display,serif',fontSize:'1.2rem',color:'#1C2B35',marginBottom:'1rem'}}>Din historik</h3>
                 {activityLog.map((entry,i) => (
                   <div key={i} style={{padding:'0.9rem 0',borderBottom: i<activityLog.length-1 ? '1px solid rgba(28,43,53,0.06)' : 'none'}}>
                     <div style={{fontSize:'0.72rem',color:'#4E9E8D',fontWeight:600,marginBottom:'0.3rem'}}>{entry.date}</div>
@@ -880,9 +925,9 @@ export const HalsaPage = ({ nav, isPremium, currentUser }) => {
 
             {anxietyLog.length > 0 && (
               <div className="mood-card">
-                <h3 style={{fontFamily:'DM Serif Display,serif',fontSize:'1.2rem',color:'#1C2B35',marginBottom:'1rem'}}>Senaste 7 dagarna</h3>
+                <h3 style={{fontFamily:'DM Serif Display,serif',fontSize:'1.2rem',color:'#1C2B35',marginBottom:'1rem'}}>Senaste dagarna</h3>
                 <div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap'}}>
-                  {[...anxietyLog].reverse().map((entry,i) => (
+                  {anxietyLog.slice(0,7).slice().reverse().map((entry,i) => (
                     <div key={i} style={{
                       flex:'1 1 60px', textAlign:'center', padding:'0.8rem 0.4rem',
                       background: entry.anxiety ? 'rgba(192,86,58,0.1)' : 'rgba(58,125,110,0.1)',
@@ -899,6 +944,40 @@ export const HalsaPage = ({ nav, isPremium, currentUser }) => {
               </div>
             )}
           </>
+        )}
+
+        {activeTab === 'insikter' && (
+          <div className="mood-card">
+            {!insightsUnlocked ? (
+              <>
+                <h3 style={{fontFamily:'DM Serif Display,serif',fontSize:'1.3rem',color:'#1C2B35',marginBottom:'0.5rem'}}>Insikter låses upp snart</h3>
+                <p style={{fontSize:'0.88rem',color:'#6B7A85',lineHeight:1.6,marginBottom:'1rem'}}>
+                  Logga mående, aktivitet eller ångest under {INSIGHT_THRESHOLD} olika dagar, så analyserar vi dina egna mönster åt dig — inte generiska tips, utan något baserat på din faktiska data.
+                </p>
+                <div style={{background:'#F2EDE5',borderRadius:'8px',height:'10px',overflow:'hidden',marginBottom:'0.5rem'}}>
+                  <div style={{width:`${Math.min(100,(uniqueLoggedDays/INSIGHT_THRESHOLD)*100)}%`,height:'100%',background:'#4E9E8D',borderRadius:'8px'}}/>
+                </div>
+                <div style={{fontSize:'0.8rem',color:'#4E9E8D',fontWeight:600}}>{uniqueLoggedDays} av {INSIGHT_THRESHOLD} dagar loggade</div>
+              </>
+            ) : (
+              <>
+                <h3 style={{fontFamily:'DM Serif Display,serif',fontSize:'1.3rem',color:'#1C2B35',marginBottom:'0.8rem'}}>Dina insikter</h3>
+                {insightLoading && <p style={{color:'#6B7A85',fontSize:'0.88rem'}}>Analyserar din data...</p>}
+                {insightError && (
+                  <>
+                    <p style={{color:'#6B7A85',fontSize:'0.88rem',marginBottom:'1rem'}}>Kunde inte hämta insikter just nu.</p>
+                    <button className="btn-ghost" onClick={fetchInsight}>Försök igen</button>
+                  </>
+                )}
+                {insight && !insightLoading && (
+                  <>
+                    <p style={{fontSize:'0.95rem',color:'#1C2B35',lineHeight:1.75,whiteSpace:'pre-wrap'}}>{insight}</p>
+                    <p style={{fontSize:'0.72rem',color:'#6B7A85',marginTop:'1.5rem'}}>Uppdateras en gång per dag, baserat på dina senaste loggar.</p>
+                  </>
+                )}
+              </>
+            )}
+          </div>
         )}
 
       </div>
